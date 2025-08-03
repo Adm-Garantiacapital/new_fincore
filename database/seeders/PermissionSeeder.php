@@ -11,53 +11,36 @@ class PermissionSeeder extends Seeder{
      * Run the database seeds.
      */
     public function run(): void{
-        #Cliente
-        Permission::create(['name' => 'crear cliente']);
-        Permission::create(['name' => 'editar cliente']);
-        Permission::create(['name' => 'eliminar cliente']);
-        Permission::create(['name' => 'ver cliente']);
-        #Habitacion
-        Permission::create(['name' => 'crear habitacion']);
-        Permission::create(['name' => 'editar habitacion']);
-        Permission::create(['name' => 'eliminar habitacion']);
-        Permission::create(['name' => 'ver habitacion']);
-        #Horario
-        Permission::create(['name' => 'crear horario']);
-        Permission::create(['name' => 'editar horario']);
-        Permission::create(['name' => 'eliminar horario']);
-        Permission::create(['name' => 'ver horario']);
-        #Pisos
-        Permission::create(['name' => 'crear piso']);
-        Permission::create(['name' => 'editar piso']);
-        Permission::create(['name' => 'eliminar piso']);
-        Permission::create(['name' => 'ver piso']);
-        #Tipo de habitacion
-        Permission::create(['name' => 'crear tipo habitacion']);
-        Permission::create(['name' => 'editar tipo habitacion']);
-        Permission::create(['name' => 'eliminar tipo habitacion']);
-        Permission::create(['name' => 'ver tipo habitacion']);
-        #Uso de la habitacion
-        Permission::create(['name' => 'crear uso habitacion']);
-        Permission::create(['name' => 'editar uso habitacion']);
-        Permission::create(['name' => 'eliminar uso habitacion']);
-        Permission::create(['name' => 'ver uso habitacion']);
-        #Inicio del inventario
-        #Categorias
-        Permission::create(['name' => 'crear categorias']);
-        Permission::create(['name' => 'editar categorias']);
-        Permission::create(['name' => 'eliminar categorias']);
-        Permission::create(['name' => 'ver categorias']);
+        #Areas
+        Permission::create(['name' => 'crear areas']);
+        Permission::create(['name' => 'editar areas']);
+        Permission::create(['name' => 'eliminar areas']);
+        Permission::create(['name' => 'ver areas']);
+        #Sub Areas
+        Permission::create(['name' => 'crear sub areas']);
+        Permission::create(['name' => 'editar sub areas']);
+        Permission::create(['name' => 'eliminar sub areas']);
+        Permission::create(['name' => 'ver sub areas']);
+        #Detalle Persona
+        Permission::create(['name' => 'crear detalle persona']);
+        Permission::create(['name' => 'editar detalle persona']);
+        Permission::create(['name' => 'eliminar detalle persona']);
+        Permission::create(['name' => 'ver detalle persona']);
+        #Estados
+        Permission::create(['name' => 'crear estado']);
+        Permission::create(['name' => 'editar estado']);
+        Permission::create(['name' => 'eliminar estado']);
+        Permission::create(['name' => 'ver estado']);
+        #Personas
+        Permission::create(['name' => 'crear persona']);
+        Permission::create(['name' => 'editar persona']);
+        Permission::create(['name' => 'eliminar persona']);
+        Permission::create(['name' => 'ver persona']);
         #Productos
         Permission::create(['name' => 'crear productos']);
         Permission::create(['name' => 'editar productos']);
         Permission::create(['name' => 'eliminar productos']);
         Permission::create(['name' => 'ver productos']);
-        #Inventario
-        Permission::create(['name' => 'crear inventario']);
-        Permission::create(['name' => 'editar inventario']);
-        Permission::create(['name' => 'eliminar inventario']);
-        Permission::create(['name' => 'ver inventario']);
-        #Fin del inventario
         #User
         Permission::create(['name' => 'crear usuarios']);
         Permission::create(['name' => 'editar usuarios']);

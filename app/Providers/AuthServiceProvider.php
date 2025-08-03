@@ -6,7 +6,6 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Policies\RolePolicy;
 use App\Policies\PermissionPolicy;
-use App\Policies\ReportePolicy;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
@@ -20,13 +19,12 @@ class AuthServiceProvider extends ServiceProvider {
     ];
     
     public function boot(): void {
-        $this->registerPolicies();        
+        $this->registerPolicies();
         try {
             DB::connection()->getPdo();
             if (Schema::hasTable('permissions') && Schema::hasTable('roles')) {
                 Gate::policy(Role::class, RolePolicy::class);
                 Gate::policy(Permission::class, PermissionPolicy::class);
-                Gate::define('ver-reportes', [ReportePolicy::class, 'viewAny']);
             }
         } catch (PDOException $e) {
             
