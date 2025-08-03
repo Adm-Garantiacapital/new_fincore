@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('sub_areas', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('code')->nullable();
+            $table->string('nombre');
+            $table->string('codigo')->nullable();
             $table->foreignId('area_id')->constrained('areas')->onDelete('cascade');
             $table->foreignId('estado_id')->constrained('estados');
             // Auditoría

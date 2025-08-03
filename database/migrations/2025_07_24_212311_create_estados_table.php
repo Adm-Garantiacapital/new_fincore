@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('estados', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('nombre');
             $table->text('descripcion')->nullable();
 
             // Auditoría

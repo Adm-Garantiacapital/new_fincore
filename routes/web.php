@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Api\RolesController;
 use App\Http\Controllers\Api\UsuariosController;
+use App\Http\Controllers\Panel\AreasController;
+use App\Http\Controllers\Panel\EstadoController;
+use App\Http\Controllers\Panel\SubAreasController;
 use App\Http\Controllers\Web\DetallePersonWeb;
 use App\Http\Controllers\Web\EstadosWeb;
 use App\Http\Controllers\Web\PersonasWeb;
@@ -34,6 +37,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/sub/areas', [SubAreasWeb::class,'views'])->name('sub.views');
         Route::get('/usuario', [UserWeb::class,'index'])->name('usuario.index');
         Route::get('/roles', [UserWeb::class, 'roles'])->name('roles.view');
+    });
+    #Estados -> BACKEND
+    Route::prefix('estados')->group(function(){
+        Route::get('/', [EstadoController::class, 'index'])->name('estados.index');
+        Route::post('/', [EstadoController::class, 'store'])->name('estados.store');
+        Route::get('/{id}', [EstadoController::class, 'show'])->name('estados.show');
+        Route::put('/{id}', [EstadoController::class, 'update'])->name('estados.update');
+        Route::delete('/{id}', [EstadoController::class, 'delete'])->name('estados.delete');
+    });
+    #Areas -> BACKEND
+    Route::prefix('areas')->group(function(){
+        Route::get('/', [AreasController::class, 'index'])->name('areas.index');
+        Route::post('/', [AreasController::class, 'store'])->name('areas.store');
+        Route::get('/{id}', [AreasController::class, 'show'])->name('areas.show');
+        Route::put('/{id}', [AreasController::class, 'update'])->name('areas.update');
+        Route::delete('/{id}', [AreasController::class, 'delete'])->name('areas.delete');
+    });
+    #Sub Areas -> BACKEND
+    Route::prefix('subareas')->group(function(){
+        Route::get('/', [SubAreasController::class, 'index'])->name('subareas.index');
+        Route::post('/', [SubAreasController::class, 'store'])->name('subareas.store');
+        Route::get('/{id}', [SubAreasController::class, 'show'])->name('subareas.show');
+        Route::put('/{id}', [SubAreasController::class, 'update'])->name('subareas.update');
+        Route::delete('/{id}', [SubAreasController::class, 'delete'])->name('subareas.delete');
     });
     #USUARIOS -> BACKEND
     Route::prefix('usuarios')->group(function(){

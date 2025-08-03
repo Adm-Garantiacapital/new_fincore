@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Estado extends Model{
     use SoftDeletes;
-    protected $fillable = ['name', 'descripcion', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = ['nombre', 'descripcion', 'created_by', 'updated_by', 'deleted_by'];
     public function areas(){
         return $this->hasMany(Area::class);
     }

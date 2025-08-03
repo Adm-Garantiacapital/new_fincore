@@ -62,7 +62,4 @@ class User extends Authenticatable
     public function isOnline(): bool    {
         return cache()->has('user-is-online-' . $this->id);
     }
-    public function inventarios(){
-        return $this->hasMany(Inventario::class, 'usuario_id');
-    }
 }
