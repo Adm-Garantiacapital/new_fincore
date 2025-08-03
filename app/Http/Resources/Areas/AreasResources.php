@@ -10,6 +10,7 @@ class AreasResources extends JsonResource{
         return [
             'id' => $this->id,
             'nombre' => $this->nombre,
+            'estado' => $this->estado->nombre,
             'creacion' => Carbon::parse($this->created_at)->format('d-m-Y H:i:s A'),
             'actualizacion' => Carbon::parse($this->updated_at)->format('d-m-Y H:i:s A'),
         ];

@@ -14,10 +14,10 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Throwable;
 
 class SubAreasController extends Controller{
-    public function index(){
+    public function index($area_id){
         try {
             Gate::authorize('viewAny', SubArea::class);
-            $subareas = SubArea::all();
+            $subareas = SubArea::where('area_id', $area_id)->get();
             return response()->json([
                 'total' => $subareas->count(),
                 'data' => SubAreasResources::collection($subareas),

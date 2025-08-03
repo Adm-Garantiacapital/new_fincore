@@ -1,28 +1,28 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
+import { router } from '@inertiajs/vue3'; // 👈 Inertia router
 import Button from 'primevue/button';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
-import Tag from 'primevue/tag';
 import axios from 'axios';
+import Tag from 'primevue/tag';
 import { debounce } from 'lodash';
-import DeleteEstados from './DeleteEstados.vue';
-import UpdateEstados from './UpdateEstados.vue';
+import DeleteAreas from './DeleteAreas.vue';
+import UpdateAreas from './UpdateAreas.vue';
 
 const dt = ref();
-const tiposCliente = ref([]);
-const selectedTiposCliente = ref();
+const areas = ref([]);
+const selectedAreas = ref();
 const loading = ref(false);
 const globalFilterValue = ref('');
 const deleteDialog = ref(false);
-const tipoCliente = ref({});
-const selectedTipoClienteId = ref(null);
-const selectedEstado = ref(null);
+const area = ref({});
+const selectedAreaId = ref(null);
 const updateDialog = ref(false);
-const contadorEstados = ref(0);
+const contadorAreas = ref(0);
 
 const rowsPerPage = ref(10);
 const currentPage = ref(1);
@@ -35,56 +35,60 @@ const props = defineProps({
 });
 
 watch(() => props.refresh, () => {
-    loadTiposCliente();
+    loadAreas();
 });
 
-function editTipoCliente(cliente) {
-    selectedTipoClienteId.value = cliente.id;
+function editArea(area) {
+    selectedAreaId.value = area.id;
     updateDialog.value = true;
 }
 
-function confirmDelete(cliente) {
-    tipoCliente.value = cliente;
+function confirmDelete(areaData) {
+    area.value = areaData;
     deleteDialog.value = true;
 }
 
-function handleTipoClienteUpdated() {
-    loadTiposCliente();
+function handleAreaUpdated() {
+    loadAreas();
 }
 
-function handleTipoClienteDeleted() {
-    loadTiposCliente();
+function handleAreaDeleted() {
+    loadAreas();
 }
 
-const loadTiposCliente = async () => {
+// 👇 Función para redirigir al hacer clic en la casita
+function accionCasita(area) {
+    router.visit(`/panel/sub/areas/${area.id}`);
+}
+
+const loadAreas = async () => {
     loading.value = true;
     try {
         const params = {
-            estado: selectedEstado.value?.value || '',
             search: globalFilterValue.value,
         };
-        const response = await axios.get('/estados', { params });
-        tiposCliente.value = response.data.data;
-        contadorEstados.value = response.data.total;
+        const response = await axios.get('/areas', { params });
+        areas.value = response.data.data;
+        contadorAreas.value = response.data.total;
         currentPage.value = 1;
     } catch (error) {
-        console.error('Error al cargar tipos de cliente:', error);
+        console.error('Error al cargar áreas:', error);
     } finally {
         loading.value = false;
     }
 };
 
-const filteredEstados = computed(() => {
+const filteredAreas = computed(() => {
     const search = globalFilterValue.value.toLowerCase();
-    return tiposCliente.value.filter((estado) =>
-        estado.nombre.toLowerCase().includes(search) ||
-        (estado.descripcion && estado.descripcion.toLowerCase().includes(search))
+    return areas.value.filter((area) =>
+        area.nombre.toLowerCase().includes(search) ||
+        (area.estado && area.estado.toLowerCase().includes(search))
     );
 });
 
-const paginatedEstados = computed(() => {
+const paginatedAreas = computed(() => {
     const start = (currentPage.value - 1) * rowsPerPage.value;
-    return filteredEstados.value.slice(start, start + rowsPerPage.value);
+    return filteredAreas.value.slice(start, start + rowsPerPage.value);
 });
 
 const onGlobalSearch = debounce(() => {
@@ -97,22 +101,21 @@ const onPage = (event) => {
 };
 
 onMounted(() => {
-    loadTiposCliente();
+    loadAreas();
 });
 </script>
-
 <template>
-    <DataTable ref="dt" v-model:selection="selectedTiposCliente" :value="paginatedEstados" dataKey="id"
-        :paginator="true" :rows="rowsPerPage" :totalRecords="filteredEstados.length"
-        :first="(currentPage - 1) * rowsPerPage" :loading="loading" @page="onPage" :rowsPerPageOptions="[5, 10, 20]"
-        scrollable scrollHeight="574px"
+    <DataTable ref="dt" v-model:selection="selectedAreas" :value="paginatedAreas" dataKey="id" :paginator="true"
+        :rows="rowsPerPage" :totalRecords="filteredAreas.length" :first="(currentPage - 1) * rowsPerPage"
+        :loading="loading" @page="onPage" :rowsPerPageOptions="[5, 10, 20]" scrollable scrollHeight="574px"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} estados" class="p-datatable-sm">
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} áreas" class="p-datatable-sm">
+
         <template #header>
             <div class="flex flex-wrap gap-2 items-center justify-between">
                 <h4 class="m-0">
-                    Estados Generales
-                    <Tag severity="contrast" :value="contadorEstados" />
+                    Áreas Generales
+                    <Tag severity="contrast" :value="contadorAreas" />
                 </h4>
                 <div class="flex flex-wrap gap-2">
                     <IconField>
@@ -121,23 +124,27 @@ onMounted(() => {
                         </InputIcon>
                         <InputText v-model="globalFilterValue" @input="onGlobalSearch" placeholder="Buscar..." />
                     </IconField>
-                    <Button icon="pi pi-refresh" outlined rounded aria-label="Refresh" @click="loadTiposCliente" />
+                    <Button icon="pi pi-refresh" outlined rounded aria-label="Refresh" @click="loadAreas" />
                 </div>
             </div>
         </template>
+
         <Column selectionMode="multiple" style="width: 1rem" :exportable="false" />
         <Column field="nombre" header="Nombre" sortable style="min-width: 13rem" />
-        <Column field="descripcion" header="Descripción" sortable style="min-width: 13rem" />
+        <Column field="estado" header="Estado" sortable style="min-width: 10rem" />
         <Column field="creacion" header="Creación" sortable style="min-width: 13rem" />
         <Column field="actualizacion" header="Actualización" sortable style="min-width: 13rem" />
-        <Column :exportable="false" style="min-width: 8rem">
+
+        <Column>
             <template #body="slotProps">
-                <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editTipoCliente(slotProps.data)" />
+                <Button icon="pi pi-home" outlined rounded class="mr-2" severity="contrast"
+                    @click="accionCasita(slotProps.data)" />
+                <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editArea(slotProps.data)" />
                 <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDelete(slotProps.data)" />
             </template>
         </Column>
     </DataTable>
-    <DeleteEstados v-model:visible="deleteDialog" :tipoCliente="tipoCliente" @deleted="handleTipoClienteDeleted" />
-    <UpdateEstados v-model:visible="updateDialog" :tipoClienteId="selectedTipoClienteId"
-        @updated="handleTipoClienteUpdated" />
+
+    <DeleteAreas v-model:visible="deleteDialog" :tipoCliente="area" @deleted="handleAreaDeleted" />
+    <UpdateAreas v-model:visible="updateDialog" :tipoClienteId="selectedAreaId" @updated="handleAreaUpdated" />
 </template>

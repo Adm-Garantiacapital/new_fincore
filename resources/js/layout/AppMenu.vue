@@ -9,17 +9,54 @@ const hasPermission = (perm) => permissions.value.includes(perm);
 
 const model = computed(() => [
     {
-        label: 'Home',
+        label: 'Inicio',
         items: [
             { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/dashboard' }
         ]
     },
     {
-        label: 'Usuarios',
+        label: 'Administración',
+        icon: 'pi pi-fw pi-cog',
         items: [
-            hasPermission('ver usuarios') && { label: 'Gestión de Usuarios', icon: 'pi pi-fw pi-user-edit', to: '/panel/usuario' },
-            hasPermission('ver roles') && { label: 'Roles', icon: 'pi pi-fw pi-check-square', to: '/panel/roles' },
-        ].filter(Boolean),
+            {
+                label: 'Gestión de Usuarios',
+                icon: 'pi pi-fw pi-users',
+                items: [
+                    hasPermission('ver usuarios') && {
+                        label: 'Usuarios',
+                        icon: 'pi pi-fw pi-user-edit',
+                        to: '/panel/usuario'
+                    },
+                    hasPermission('ver roles') && {
+                        label: 'Roles',
+                        icon: 'pi pi-fw pi-key',
+                        to: '/panel/roles'
+                    }
+                ].filter(Boolean)
+            },
+            {
+                label: 'Organización Interna',
+                icon: 'pi pi-fw pi-sitemap',
+                items: [
+                    hasPermission('ver areas') && {
+                        label: 'Áreas',
+                        icon: 'pi pi-fw pi-building',
+                        to: '/panel/area'
+                    }
+                ].filter(Boolean)
+            },
+            {
+                label: 'Configuraciones de Estado',
+                icon: 'pi pi-fw pi-tags',
+                items: [
+                    hasPermission('ver estado') && {
+                        label: 'Estados',
+                        icon: 'pi pi-fw pi-bookmark',
+                        to: '/panel/estado'
+                    }
+                ].filter(Boolean)
+            }
+        ].filter(section => section.items.length > 0),
     },
 ].filter(section => section.items.length > 0));
 </script>
@@ -33,5 +70,5 @@ const model = computed(() => [
 </template>
 
 <style scoped lang="scss">
-/* Puedes agregar tus estilos aquí si lo deseas */
+/* Estilos opcionales */
 </style>

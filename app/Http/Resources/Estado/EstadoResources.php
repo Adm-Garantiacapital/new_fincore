@@ -10,7 +10,7 @@ class EstadoResources extends JsonResource{
         return [
             'id' => $this->id,
             'nombre' => $this->nombre,
-            'descripcion' => $this->descripcion,
+            'descripcion' => $this->descripcion??'Sin descripcion',
             'creacion' => Carbon::parse($this->created_at)->format('d-m-Y H:i:s A'),
             'actualizacion' => Carbon::parse($this->updated_at)->format('d-m-Y H:i:s A'),
         ];

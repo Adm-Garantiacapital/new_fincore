@@ -11,6 +11,7 @@ class SubAreasResources extends JsonResource{
             'id' => $this->id,
             'nombre' => $this->nombre,
             'codigo' => $this->codigo,
+            'estado' => $this->estado->nombre,
             'creacion' => Carbon::parse($this->created_at)->format('d-m-Y H:i:s A'),
             'actualizacion' => Carbon::parse($this->updated_at)->format('d-m-Y H:i:s A'),
         ];

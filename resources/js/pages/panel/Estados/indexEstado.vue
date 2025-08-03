@@ -7,7 +7,7 @@
             </template>
             <template v-else>
                 <div class="card">
-                    <AddEstados @agregadp="refrescarListado"/>
+                    <AddEstados @agregado="refrescarListado"/>
                     <ListEstados :refresh="refreshKey"/>
                 </div>
             </template>

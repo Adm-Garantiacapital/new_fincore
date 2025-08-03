@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\UsuariosController;
 use App\Http\Controllers\Panel\AreasController;
 use App\Http\Controllers\Panel\EstadoController;
 use App\Http\Controllers\Panel\SubAreasController;
+use App\Http\Controllers\Web\AreasWeb;
 use App\Http\Controllers\Web\DetallePersonWeb;
 use App\Http\Controllers\Web\EstadosWeb;
 use App\Http\Controllers\Web\PersonasWeb;
@@ -29,12 +30,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
     #Frontend
     Route::prefix('panel')->group(function(){
-        Route::get('/area', [UserWeb::class,'views'])->name('area.views');
+        Route::get('/area', [AreasWeb::class,'views'])->name('area.views');
         Route::get('/detalle', [DetallePersonWeb::class,'views'])->name('detalle.views');
         Route::get('/estado', [EstadosWeb::class,'views'])->name('estado.views');
         Route::get('/tipo', [PersonasWeb::class,'views'])->name('tipo.views');
         Route::get('/producto', [ProductosWeb::class,'views'])->name('producto.views');
-        Route::get('/sub/areas', [SubAreasWeb::class,'views'])->name('sub.views');
+        Route::get('/sub/areas/{id}', [SubAreasWeb::class, 'views'])->name('sub.views');
         Route::get('/usuario', [UserWeb::class,'index'])->name('usuario.index');
         Route::get('/roles', [UserWeb::class, 'roles'])->name('roles.view');
     });
@@ -56,7 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
     #Sub Areas -> BACKEND
     Route::prefix('subareas')->group(function(){
-        Route::get('/', [SubAreasController::class, 'index'])->name('subareas.index');
+        Route::get('/{area_id}/list', [SubAreasController::class, 'index'])->name('subareas.index');
         Route::post('/', [SubAreasController::class, 'store'])->name('subareas.store');
         Route::get('/{id}', [SubAreasController::class, 'show'])->name('subareas.show');
         Route::put('/{id}', [SubAreasController::class, 'update'])->name('subareas.update');

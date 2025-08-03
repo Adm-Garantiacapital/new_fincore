@@ -5,34 +5,42 @@
     </template>
   </Toolbar>
 
-  <Dialog v-model:visible="tipoClienteDialog" :style="{ width: '600px' }" header="Registro de estados generales"
-    :modal="true" :closable="true" :closeOnEscape="true">
+  <Dialog v-model:visible="estadoDialog" :style="{ width: '600px' }" header="Registro de Estado" :modal="true"
+    :closable="true" :closeOnEscape="true">
     <div class="flex flex-col gap-6">
       <div class="grid grid-cols-12 gap-4">
-        <div class="col-span-9">
-          <label for="nombre" class="block font-bold mb-3">Nombre <span class="text-red-500">*</span></label>
-          <InputText id="nombre" v-model.trim="tipoCliente.nombre" required maxlength="100" fluid
-            :class="{ 'p-invalid': serverErrors.nombre }" />
-          <small v-if="submitted && !tipoCliente.nombre" class="text-red-500">El nombre es obligatorio.</small>
-          <small v-else-if="submitted && tipoCliente.nombre && tipoCliente.nombre.length < 2" class="text-red-500">
-            El nombre debe tener al menos 2 caracteres.
+        <!-- Nombre -->
+        <div class="col-span-12">
+          <label for="nombre" class="block font-bold mb-2">
+            Nombre <span class="text-red-500">*</span>
+          </label>
+          <InputText id="nombre" v-model.trim="estado.nombre" maxlength="255" fluid
+            :class="{ 'p-invalid': submitted && (!estado.nombre || serverErrors.nombre) }" />
+          <small v-if="submitted && !estado.nombre" class="text-red-500">El nombre es obligatorio.</small>
+          <small v-else-if="submitted && estado.nombre.length > 255" class="text-red-500">
+            El nombre no debe superar los 255 caracteres.
           </small>
-          <small v-else-if="serverErrors.nombre" class="text-red-500">{{ serverErrors.nombre[0] }}</small>
+          <small v-else-if="serverErrors.nombre" class="text-red-500">
+            {{ serverErrors.nombre[0] }}
+          </small>
         </div>
 
-        <div class="col-span-3">
-          <label for="estado" class="block font-bold mb-2">Estado <span class="text-red-500">*</span></label>
-          <Select v-model="tipoCliente.estado" :options="estadoOptions" optionLabel="label" optionValue="value"
-            placeholder="Selecciona estado" :class="{ 'p-invalid': serverErrors.estado }" />
-          <small v-if="submitted && !tipoCliente.estado" class="text-red-500">El estado es obligatorio.</small>
-          <small v-else-if="serverErrors.estado" class="text-red-500">{{ serverErrors.estado[0] }}</small>
+        <!-- Descripción -->
+        <div class="col-span-12">
+          <label for="descripcion" class="block font-bold mb-2">Descripción</label>
+          <Textarea id="descripcion" v-model.trim="estado.descripcion" rows="4" autoResize fluid
+            :class="{ 'p-invalid': submitted && serverErrors.descripcion }" />
+          <small v-if="serverErrors.descripcion" class="text-red-500">
+            {{ serverErrors.descripcion[0] }}
+          </small>
         </div>
       </div>
     </div>
 
     <template #footer>
       <Button label="Cancelar" icon="pi pi-times" text @click="hideDialog" />
-      <Button label="Guardar" icon="pi pi-check" @click="guardarTipoCliente" :loading="loading" />
+      <Button label="Guardar" icon="pi pi-check" :loading="loading"
+        :disabled="!estado.nombre || estado.nombre.length > 255" @click="guardarEstado" />
     </template>
   </Dialog>
 </template>
@@ -44,31 +52,27 @@ import Toolbar from 'primevue/toolbar';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
 import { useToast } from 'primevue/usetoast';
 import { defineEmits } from 'vue';
-import Select from 'primevue/select';
 
 const toast = useToast();
+const emit = defineEmits(['agregado']);
+
+const estadoDialog = ref(false);
 const submitted = ref(false);
 const loading = ref(false);
-const tipoClienteDialog = ref(false);
 const serverErrors = ref({});
-const emit = defineEmits(['agregadp']);
 
-const estadoOptions = [
-  { label: 'Activo', value: 'activo' },
-  { label: 'Inactivo', value: 'inactivo' },
-];
-
-const tipoCliente = ref({
+const estado = ref({
   nombre: '',
-  estado: 'activo',  // valor por defecto acorde al enum
+  descripcion: '',
 });
 
-function resetTipoCliente() {
-  tipoCliente.value = {
+function resetEstado() {
+  estado.value = {
     nombre: '',
-    estado: 'activo',
+    descripcion: '',
   };
   serverErrors.value = {};
   submitted.value = false;
@@ -76,25 +80,30 @@ function resetTipoCliente() {
 }
 
 function openNew() {
-  resetTipoCliente();
-  tipoClienteDialog.value = true;
+  resetEstado();
+  estadoDialog.value = true;
 }
 
 function hideDialog() {
-  tipoClienteDialog.value = false;
-  resetTipoCliente();
+  estadoDialog.value = false;
+  resetEstado();
 }
 
-async function guardarTipoCliente() {
+async function guardarEstado() {
   submitted.value = true;
   serverErrors.value = {};
   loading.value = true;
 
   try {
-    await axios.post('/tipo-cliente', tipoCliente.value);
-    toast.add({ severity: 'success', summary: 'Éxito', detail: 'Tipo cliente registrado', life: 3000 });
+    await axios.post('/estados', estado.value);
+    toast.add({
+      severity: 'success',
+      summary: 'Éxito',
+      detail: 'Estado registrado correctamente',
+      life: 3000,
+    });
     hideDialog();
-    emit('agregadp');
+    emit('agregado');
   } catch (error) {
     if (error.response && error.response.status === 422) {
       serverErrors.value = error.response.data.errors || {};
@@ -102,7 +111,7 @@ async function guardarTipoCliente() {
       toast.add({
         severity: 'error',
         summary: 'Error',
-        detail: 'No se pudo registrar el tipo cliente',
+        detail: 'No se pudo registrar el estado',
         life: 3000,
       });
     }

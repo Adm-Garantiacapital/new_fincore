@@ -11,7 +11,6 @@ class StoreSubAreasRequests extends FormRequest{
     public function rules(): array{
         return [
             'nombre' => 'required|string|max:255|unique:sub_areas,nombre',
-            'codigo' => 'nullable|string|max:255',
             'area_id' => 'required|exists:areas,id',
             'estado_id' => 'required|exists:estados,id',
         ];
@@ -22,8 +21,6 @@ class StoreSubAreasRequests extends FormRequest{
             'nombre.string' => 'El campo nombre debe ser una cadena de texto.',
             'nombre.max' => 'El campo nombre no debe superar los 255 caracteres.',
             'nombre.unique' => 'Ya existe una subárea con este nombre.',
-            'codigo.string' => 'El campo código debe ser una cadena de texto.',
-            'codigo.max' => 'El campo código no debe superar los 255 caracteres.',
             'area_id.required' => 'Debe seleccionar un área.',
             'area_id.exists' => 'El área seleccionada no es válida.',
             'estado_id.required' => 'Debe seleccionar un estado.',
