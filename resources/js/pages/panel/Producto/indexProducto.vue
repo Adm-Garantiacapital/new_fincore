@@ -7,7 +7,8 @@
             </template>
             <template v-else>
                 <div class="card">
-
+                    <AddProductos @agregado="refrescarListado"/>
+                    <ListProductos :refresh="refreshKey"/>
                 </div>
             </template>
         </div>
@@ -19,8 +20,15 @@ import { ref, onMounted } from 'vue';
 import AppLayout from '@/layout/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import Espera from '@/components/Espera.vue';
+import AddProductos from './Desarrollo/AddProductos.vue';
+import ListProductos from './Desarrollo/ListProductos.vue';
 
 const isLoading = ref(true);
+const refreshKey = ref(0);
+
+function refrescarListado() {
+    refreshKey.value++;
+}
 
 onMounted(() => {
     setTimeout(() => {

@@ -7,10 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Producto extends Model{
     use SoftDeletes;
-    protected $fillable = ['nombre', 'descripcion', 'sub_area_id', 'estado_id', 'created_by', 'updated_by', 'deleted_by'];
-    public function subArea(){
-        return $this->belongsTo(SubArea::class);
-    }
+    protected $fillable = ['nombre', 'descripcion', 'estado_id', 'created_by', 'updated_by', 'deleted_by'];
     public function estado(){
         return $this->belongsTo(Estado::class);
     }

@@ -15,6 +15,23 @@ const model = computed(() => [
         ]
     },
     {
+        label: 'Producto',
+        icon: 'pi pi-fw pi-cog',
+        items: [
+            {
+                label: 'Tipo de Persona',
+                icon: 'pi pi-fw pi-users',
+                items: [
+                    hasPermission('ver persona') && {
+                        label: 'Reguistro de Persona',
+                        icon: 'pi pi-fw pi-user-edit',
+                        to: '/panel/tipo'
+                    }
+                ].filter(Boolean)
+            }
+        ].filter(section => section.items.length > 0),
+    },
+    {
         label: 'Administración',
         icon: 'pi pi-fw pi-cog',
         items: [
@@ -38,6 +55,11 @@ const model = computed(() => [
                 label: 'Organización Interna',
                 icon: 'pi pi-fw pi-sitemap',
                 items: [
+                    hasPermission('ver productos') && {
+                        label: 'Productos',
+                        icon: 'pi pi-fw pi-box',
+                        to: '/panel/producto'
+                    },
                     hasPermission('ver areas') && {
                         label: 'Áreas',
                         icon: 'pi pi-fw pi-building',
@@ -46,7 +68,7 @@ const model = computed(() => [
                 ].filter(Boolean)
             },
             {
-                label: 'Configuraciones de Estado',
+                label: 'Estado Generales',
                 icon: 'pi pi-fw pi-tags',
                 items: [
                     hasPermission('ver estado') && {

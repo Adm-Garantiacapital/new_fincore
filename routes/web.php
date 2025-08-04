@@ -5,12 +5,14 @@ use App\Http\Controllers\Api\UsuariosController;
 use App\Http\Controllers\Panel\AreasController;
 use App\Http\Controllers\Panel\EstadoController;
 use App\Http\Controllers\Panel\SubAreasController;
+use App\Http\Controllers\Panel\ProductoController;
 use App\Http\Controllers\Web\AreasWeb;
 use App\Http\Controllers\Web\DetallePersonWeb;
 use App\Http\Controllers\Web\EstadosWeb;
 use App\Http\Controllers\Web\PersonasWeb;
 use App\Http\Controllers\Web\ProductosWeb;
 use App\Http\Controllers\Web\SubAreasWeb;
+use App\Http\Controllers\Web\TipoWeb;
 use App\Http\Controllers\Web\UserWeb;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -46,6 +48,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{id}', [EstadoController::class, 'show'])->name('estados.show');
         Route::put('/{id}', [EstadoController::class, 'update'])->name('estados.update');
         Route::delete('/{id}', [EstadoController::class, 'delete'])->name('estados.delete');
+    });
+    #Productos -> BACKEND
+    Route::prefix('productos')->group(function(){
+        Route::get('/', [ProductoController::class, 'index'])->name('estados.index');
+        Route::post('/', [ProductoController::class, 'store'])->name('estados.store');
+        Route::get('/{id}', [ProductoController::class, 'show'])->name('estados.show');
+        Route::put('/{id}', [ProductoController::class, 'update'])->name('estados.update');
+        Route::delete('/{id}', [ProductoController::class, 'delete'])->name('estados.delete');
     });
     #Areas -> BACKEND
     Route::prefix('areas')->group(function(){
