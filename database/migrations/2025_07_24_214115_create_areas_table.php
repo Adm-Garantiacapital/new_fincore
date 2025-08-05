@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('areas', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('nombre');
             $table->foreignId('estado_id')->constrained('estados');
             // Auditoría
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();

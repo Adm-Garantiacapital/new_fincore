@@ -10,7 +10,6 @@ return new class extends Migration {
             $table->id();
             $table->string('nombre');
             $table->text('descripcion')->nullable();
-            $table->foreignId('sub_area_id')->constrained('sub_areas')->onDelete('cascade');
             $table->foreignId('estado_id')->constrained('estados');
             // Auditoría
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
