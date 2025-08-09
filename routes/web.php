@@ -1,18 +1,21 @@
 <?php
 
 use App\Http\Controllers\Api\RolesController;
+use App\Http\Controllers\Api\SunatReportController;
 use App\Http\Controllers\Api\UsuariosController;
 use App\Http\Controllers\Panel\AreasController;
 use App\Http\Controllers\Panel\EstadoController;
+use App\Http\Controllers\Panel\MonedaController;
+use App\Http\Controllers\Panel\PersonaController;
 use App\Http\Controllers\Panel\SubAreasController;
 use App\Http\Controllers\Panel\ProductoController;
+use App\Http\Controllers\Panel\TipoDocumentoController;
 use App\Http\Controllers\Web\AreasWeb;
 use App\Http\Controllers\Web\DetallePersonWeb;
 use App\Http\Controllers\Web\EstadosWeb;
 use App\Http\Controllers\Web\PersonasWeb;
 use App\Http\Controllers\Web\ProductosWeb;
 use App\Http\Controllers\Web\SubAreasWeb;
-use App\Http\Controllers\Web\TipoWeb;
 use App\Http\Controllers\Web\UserWeb;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -33,13 +36,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     #Frontend
     Route::prefix('panel')->group(function(){
         Route::get('/area', [AreasWeb::class,'views'])->name('area.views');
-        Route::get('/detalle', [DetallePersonWeb::class,'views'])->name('detalle.views');
+        Route::get('/detalle/{id}', [DetallePersonWeb::class,'views'])->name('detalle.views');
         Route::get('/estado', [EstadosWeb::class,'views'])->name('estado.views');
         Route::get('/tipo', [PersonasWeb::class,'views'])->name('tipo.views');
+        Route::get('/tipo/list', [PersonasWeb::class,'viewsList'])->name('tipo.viewsList');
         Route::get('/producto', [ProductosWeb::class,'views'])->name('producto.views');
         Route::get('/sub/areas/{id}', [SubAreasWeb::class, 'views'])->name('sub.views');
         Route::get('/usuario', [UserWeb::class,'index'])->name('usuario.index');
         Route::get('/roles', [UserWeb::class, 'roles'])->name('roles.view');
+    });
+    #Moneda -> BACKEND
+    Route::prefix('moneda')->group(function(){
+        Route::get('/', [MonedaController::class, 'index']);
+    });
+    #Persona -> BACKEND
+    Route::prefix('persona')->group(function(){
+        Route::get('/', [PersonaController::class, 'index']);
+        Route::post('/', [PersonaController::class, 'Store']);
     });
     #Estados -> BACKEND
     Route::prefix('estados')->group(function(){
@@ -90,6 +103,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/{id}', [RolesController::class, 'update'])->name('roles.update');
         Route::delete('/{id}', [RolesController::class, 'destroy'])->name('roles.destroy');
     });
+    #Composisones del formulario => BACKEND
+    Route::prefix('seleccion')->group(function () {
+        Route::get('/tipo/documento', [TipoDocumentoController::class, 'index'])->name('tipo.index');
+        Route::get('/productos/{id}/tipos-documento', [TipoDocumentoController::class, 'tiposDocumentoPorProducto']);
+        Route::get('/productos/{id}/campos/{tipoId}', [TipoDocumentoController::class, 'camposPorProductoYTipo']);
+    });
+
+    Route::post('/procesar-pdf-sunat', [SunatReportController::class, 'procesar']);
 });
 
 require __DIR__.'/settings.php';

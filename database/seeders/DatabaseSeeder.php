@@ -13,7 +13,15 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PermissionSeeder::class,
             RoleSeeder::class,
-            UserSeeder::class
+            UserSeeder::class,
+            EstadosSeeder::class,
+            AreasSeeder::class,
+            SubAreasSeeder::class,
+            TiposDocumentoSeeder::class,
+            MonedaSeeder::class,
+            CamposSeeder::class,
+            ProductosSeeder::class,
+            ProductoCamposSeeder::class,
         ]);
     }
 }

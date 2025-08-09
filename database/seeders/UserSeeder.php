@@ -20,7 +20,7 @@ class UserSeeder extends Seeder{
             'dni' => '76393671',
             'apellidos' => 'Covenas Roman',
             'nacimiento' => '2003-03-11',
-            'email' => 'jefersoncovenas7@gmail.com',
+            'email' => 'user1@gmail.com',
             'password' => Hash::make('12345678'),
             'status' => true,
             'restablecimiento' => 0,

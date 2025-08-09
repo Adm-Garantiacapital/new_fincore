@@ -11,4 +11,8 @@ class PersonasWeb extends Controller{
         Gate::authorize('viewAny', Persona::class);
         return Inertia::render('panel/Persona/indexPersona');
     }
+    public function viewsList(): Response{
+        Gate::authorize('viewAny', Persona::class);
+        return Inertia::render('panel/Persona/ListPersona');
+    }
 }
