@@ -18,10 +18,6 @@ class StoreCondicionFinancieraRequests extends FormRequest{
                 'required',
                 'exists:productos,id',
             ],
-            'moneda_id' => [
-                'required',
-                'exists:monedas,id',
-            ],
             'linea_cliente' => [
                 'required',
                 'numeric',
@@ -61,9 +57,6 @@ class StoreCondicionFinancieraRequests extends FormRequest{
 
             'producto_id.required' => 'El producto es obligatorio.',
             'producto_id.exists' => 'El producto seleccionado no es válido.',
-
-            'moneda_id.required' => 'La moneda es obligatoria.',
-            'moneda_id.exists' => 'La moneda seleccionada no es válida.',
 
             'linea_cliente.required' => 'La línea de cliente es obligatoria.',
             'linea_cliente.numeric' => 'La línea de cliente debe ser un número.',

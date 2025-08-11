@@ -16,7 +16,6 @@ return new class extends Migration {
             $table->decimal('tasa_tem', 5, 2)->nullable();
             $table->decimal('adelanto', 15, 2)->nullable();
             $table->decimal('linea_adelanto', 15, 2)->nullable();
-            $table->foreignId('moneda_id')->constrained('monedas');
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();

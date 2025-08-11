@@ -19,7 +19,7 @@ const model = computed(() => [
         icon: 'pi pi-fw pi-cog',
         items: [
             {
-                label: 'Tipo de Persona',
+                label: 'Prospectos',
                 icon: 'pi pi-fw pi-users',
                 items: [
                     hasPermission('ver persona') && {

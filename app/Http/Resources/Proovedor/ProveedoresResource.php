@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Proveedor;
+namespace App\Http\Resources\Proovedor;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;

@@ -16,15 +16,11 @@ class PersonaCondicionFinanciera extends Model{
         'tasa_tem',
         'adelanto',
         'linea_adelanto',
-        'moneda_id',
         'created_by',
         'updated_by',
         'deleted_by',
     ];
     public function persona(){
         return $this->belongsTo(Persona::class, 'persona_id');
-    }
-    public function moneda(){
-        return $this->belongsTo(Moneda::class, 'moneda_id');
     }
 }

@@ -11,7 +11,6 @@ class PersonaArchivo extends Model{
     protected $fillable = [
         'persona_id',
         'nombre',
-        'descripcion',
         'created_by',
         'updated_by',
         'deleted_by',

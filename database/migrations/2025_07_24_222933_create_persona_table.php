@@ -11,9 +11,13 @@ return new class extends Migration {
             $table->foreignId('tipo_documento_id')->constrained('tipos_documento');
             $table->foreignId('producto_id')->nullable()->constrained('productos')->onDelete('cascade');
             $table->foreignId('estado_id')->constrained('estados');
+            $table->foreignId('moneda_id')->constrained('monedas');
+            $table->text('observacion')->nullable();
+            $table->text('comentario')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
+
             $table->timestamps();
             $table->softDeletes();
         });

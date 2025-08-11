@@ -10,6 +10,16 @@ class PermissionSeeder extends Seeder{
      * Run the database seeds.
      */
     public function run(): void{
+        #Aceptante
+        Permission::create(['name' => 'crear aceptante']);
+        Permission::create(['name' => 'editar aceptante']);
+        Permission::create(['name' => 'eliminar aceptante']);
+        Permission::create(['name' => 'ver aceptante']);
+        #Carnet de extrangeria
+        Permission::create(['name' => 'crear carnet de extrangeria']);
+        Permission::create(['name' => 'editar carnet de extrangeria']);
+        Permission::create(['name' => 'eliminar carnet de extrangeria']);
+        Permission::create(['name' => 'ver carnet de extrangeria']);
         #Subida de archivos
         Permission::create(['name' => 'crear subir archivos']);
         Permission::create(['name' => 'editar subir archivos']);
@@ -30,16 +40,6 @@ class PermissionSeeder extends Seeder{
         Permission::create(['name' => 'editar tipo documento']);
         Permission::create(['name' => 'eliminar tipo documento']);
         Permission::create(['name' => 'ver tipo documento']);
-        #campos
-        Permission::create(['name' => 'crear campos productos']);
-        Permission::create(['name' => 'editar campos productos']);
-        Permission::create(['name' => 'eliminar campos productos']);
-        Permission::create(['name' => 'ver campos productos']);
-        #Tipo de documento
-        Permission::create(['name' => 'crear campos']);
-        Permission::create(['name' => 'editar campos']);
-        Permission::create(['name' => 'eliminar campos']);
-        Permission::create(['name' => 'ver campos']);
         #Areas
         Permission::create(['name' => 'crear areas']);
         Permission::create(['name' => 'editar areas']);

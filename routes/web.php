@@ -4,12 +4,14 @@ use App\Http\Controllers\Api\RolesController;
 use App\Http\Controllers\Api\SunatReportController;
 use App\Http\Controllers\Api\UsuariosController;
 use App\Http\Controllers\Panel\AreasController;
+use App\Http\Controllers\Panel\DetallePersonaController;
 use App\Http\Controllers\Panel\EstadoController;
 use App\Http\Controllers\Panel\MonedaController;
 use App\Http\Controllers\Panel\PersonaController;
 use App\Http\Controllers\Panel\SubAreasController;
 use App\Http\Controllers\Panel\ProductoController;
 use App\Http\Controllers\Panel\TipoDocumentoController;
+use App\Http\Controllers\Web\AceptanteWeb;
 use App\Http\Controllers\Web\AreasWeb;
 use App\Http\Controllers\Web\DetallePersonWeb;
 use App\Http\Controllers\Web\EstadosWeb;
@@ -35,6 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
     #Frontend
     Route::prefix('panel')->group(function(){
+        Route::get('/aceptantes/{id}', [AceptanteWeb::class,'views'])->name('area.views');
         Route::get('/area', [AreasWeb::class,'views'])->name('area.views');
         Route::get('/detalle/{id}', [DetallePersonWeb::class,'views'])->name('detalle.views');
         Route::get('/estado', [EstadosWeb::class,'views'])->name('estado.views');
@@ -45,6 +48,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/usuario', [UserWeb::class,'index'])->name('usuario.index');
         Route::get('/roles', [UserWeb::class, 'roles'])->name('roles.view');
     });
+    #Detalle -> BACKEND
+    Route::prefix('detalle')->group(function(){
+        Route::post('/reporte/sunat', [DetallePersonaController::class, 'Store']);
+    });
     #Moneda -> BACKEND
     Route::prefix('moneda')->group(function(){
         Route::get('/', [MonedaController::class, 'index']);
@@ -53,6 +60,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('persona')->group(function(){
         Route::get('/', [PersonaController::class, 'index']);
         Route::post('/', [PersonaController::class, 'Store']);
+        Route::post('/ruc', [PersonaController::class, 'StoreRuc']);
+        Route::post('/carnet/extranjeria', [PersonaController::class, 'StoreCarnetExtranjeria']);
     });
     #Estados -> BACKEND
     Route::prefix('estados')->group(function(){

@@ -5,21 +5,32 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Proveedor extends Model{
+class CarnetDeExtranjeria extends Model{
     use SoftDeletes;
-    protected $table = 'proveedores';
+    protected $table = 'carnets_de_extranjeria';
     protected $fillable = [
-        'ruc',
-        'razon_social',
-        'nombre_comercial',
-        'fecha_inicio_actividad',
-        'actividad_economica',
+        'documento',
+        'nombre',
+        'apellido_paterno',
+        'apellido_materno',
+        'fecha_nacimiento',
+        'nacionalidad',
+        'sexo',
+        'estado_civil',
+        'telefono',
+        'imagenes',
+        'pagina_web',
         'direccion',
-        'ventas_aproximadas',
         'persona_id',
         'created_by',
         'updated_by',
         'deleted_by',
+    ];
+    protected $dates = [
+        'fecha_nacimiento',
+        'created_at',
+        'updated_at',
+        'deleted_at',
     ];
     public function persona(){
         return $this->belongsTo(Persona::class);
@@ -27,7 +38,7 @@ class Proveedor extends Model{
     public function creador(){
         return $this->belongsTo(User::class, 'created_by');
     }
-    public function editor(){
+    public function actualizador(){
         return $this->belongsTo(User::class, 'updated_by');
     }
     public function eliminador(){

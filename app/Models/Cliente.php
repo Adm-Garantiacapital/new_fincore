@@ -17,6 +17,7 @@ class Cliente extends Model{
         'sexo',
         'estado_civil',
         'telefono',
+        'pagina_web',
         'direccion',
         'persona_id',
         'created_by',

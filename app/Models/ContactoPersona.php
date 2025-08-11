@@ -13,10 +13,10 @@ class ContactoPersona extends Model{
         'apellido_paterno',
         'apellido_materno',
         'cargo',
-        'email',
+        'correo',
         'telefono',
-        'sitio_web',
-        'observaciones',
+        'pagina_web',
+        'observacion',
     ];
     public function persona(){
         return $this->belongsTo(Persona::class);

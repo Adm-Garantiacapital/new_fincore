@@ -9,7 +9,6 @@ return new class extends Migration {
         Schema::create('proveedores', function (Blueprint $table) {
             $table->id();
             $table->string('ruc')->unique();
-            $table->string('pagina_web')->nullable();
             $table->string('razon_social')->nullable();
             $table->string('nombre_comercial')->nullable();
             $table->date('fecha_inicio_actividad')->nullable();

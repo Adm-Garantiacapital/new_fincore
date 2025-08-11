@@ -273,8 +273,8 @@ const guardarReporte = async () => {
     try {
         guardando.value = true
 
-        const response = await axios.post('/api/prospecto/guardar_sunat_reporte', {
-            supplier_id: detallePersona.data.id,
+        const response = await axios.post('/detalle/reporte/sunat', {
+            persona_id: detallePersona.data.id,
             ano: '2025',
             nombre_comercial: pdfData.value?.datos_generales.NombreComercial,
             fecha_inscripcion: convertirFecha(pdfData.value?.datos_generales.FechaInscripcion),

@@ -11,7 +11,7 @@ class StorePersonaArchivo extends FormRequest{
     public function rules(): array{
         return [
             'persona_id' => [
-                'required',
+                'nullable',
                 'exists:personas,id'
             ],
             'archivos' => [
@@ -32,9 +32,7 @@ class StorePersonaArchivo extends FormRequest{
     }
     public function messages(): array{
         return [
-            'persona_id.required' => 'La persona es obligatoria.',
-            'persona_id.exists' => 'La persona seleccionada no existe.',
-            'archivos.required' => 'Debe subir al menos un archivo.',
+            'archivos.required' => 'Debes adjuntar al menos un archivo.',
             'archivos.array' => 'Los archivos deben enviarse en formato de lista.',
             'archivos.*.file' => 'Cada archivo debe ser válido.',
             'archivos.*.mimes' => 'Los archivos deben ser de tipo: jpg, jpeg, png, pdf, doc, docx, xls, xlsx.',

@@ -1,18 +1,12 @@
 <template>
     <div class="mt-6">
         <!-- Indicador de progreso del formulario -->
-        <div class="mb-4 p-3 bg-blue-50 border-l-4 border-blue-400 rounded">
-            <div class="flex items-center">
-                <i class="pi pi-info-circle text-blue-600 mr-2"></i>
-                <span class="text-blue-800 font-medium">Complete el formulario para registrar una persona juridica</span>
-            </div>
-        </div>
-
+        <Message severity="contrast">Complete el formulario para registrar una persona juridica</Message>
         <form @submit.prevent="submitForm" class="flex flex-col gap-6">
             
             <!-- Datos de la Empresa -->
-           <div class="flex flex-col gap-4">
-                <h3 class="font-semibold text-lg border-b pb-1 text-gray-700">
+           <div class="flex flex-col gap-4 py-5">
+                <h3 class="font-semibold text-lg border-b pb-1">
                     <i class="pi pi-building mr-2"></i>
                      Registro de Prospecto - Persona Juridica
                 </h3>
@@ -20,7 +14,7 @@
                     
                     <!-- RUC -->
                     <div class="flex flex-col gap-2">
-                        <label for="ruc" class="font-medium text-gray-700">
+                        <label for="ruc" class="font-medium">
                             <i class="pi pi-id-card mr-1 text-sm"></i>
                             RUC <span class="text-red-500">*</span>
                         </label>
@@ -28,7 +22,7 @@
                             <InputText 
                                 id="ruc"
                                 v-model="formData.ruc" 
-                                placeholder="20123456789"
+                                placeholder="Ingrese RUC de 11 dígitos"
                                 maxlength="11"
                                 :class="['flex-1', getFieldClass('ruc')]"
                                 @input="validateRuc" />
@@ -46,6 +40,14 @@
                             <i class="pi pi-exclamation-triangle mr-1"></i>
                             {{ errors.ruc[0] }}
                         </small>
+                        <small v-else-if="formData.ruc.length > 0 && formData.ruc.length < 11 && !isConsultingRuc" class="text-blue-600 flex items-center">
+                            <i class="pi pi-info-circle mr-1"></i>
+                            Complete 11 dígitos y presione buscar para consultar
+                        </small>
+                        <small v-else-if="formData.ruc.length === 11 && !rucConsultado && !isConsultingRuc && !apiError" class="text-orange-600 flex items-center">
+                            <i class="pi pi-exclamation-circle mr-1"></i>
+                            Presione el botón buscar o salga del campo para consultar
+                        </small>
                         <small v-else-if="rucConsultado && !apiError" class="text-green-600 flex items-center">
                             <i class="pi pi-check-circle mr-1"></i>
                             Datos obtenidos de SUNAT
@@ -58,14 +60,14 @@
 
                     <!-- Razón Social -->
                     <div class="flex flex-col gap-2">
-                        <label for="razon_social" class="font-medium text-gray-700">
+                        <label for="razon_social" class="font-medium ">
                             <i class="pi pi-building mr-1 text-sm"></i>
                             Razón Social <span class="text-red-500">*</span>
                         </label>
                         <InputText 
                             id="razon_social"
                             v-model="formData.razon_social" 
-                            placeholder="Ingrese razón social"
+                            placeholder="Consulte el RUC para llenar automáticamente"
                             :class="['w-full', getFieldClass('razon_social')]"
                             @input="capitalizeInput('razon_social')"
                             :disabled="isFieldDisabled('razon_social')" />
@@ -73,18 +75,26 @@
                             <i class="pi pi-exclamation-triangle mr-1"></i>
                             {{ errors.razon_social[0] }}
                         </small>
+                        <small v-else-if="!rucConsultado && !rucDataFailed && formData.ruc.length < 11" class="text-blue-600 flex items-center">
+                            <i class="pi pi-info-circle mr-1"></i>
+                            Consulte el RUC para llenar automáticamente
+                        </small>
+                        <small v-else-if="rucDataFailed" class="text-orange-600 flex items-center">
+                            <i class="pi pi-exclamation-circle mr-1"></i>
+                            RUC no encontrado. Complete manualmente
+                        </small>
                     </div>
 
                     <!-- Nombre Comercial -->
                     <div class="flex flex-col gap-2">
-                        <label for="nombre_comercial" class="font-medium text-gray-700">
+                        <label for="nombre_comercial" class="font-medium ">
                             <i class="pi pi-tag mr-1 text-sm"></i>
                             Nombre Comercial <span class="text-red-500">*</span>
                         </label>
                         <InputText 
                             id="nombre_comercial"
                             v-model="formData.nombre_comercial" 
-                            placeholder="Ingrese nombre comercial"
+                            placeholder="Consulte el RUC para llenar automáticamente"
                             :class="['w-full', getFieldClass('nombre_comercial')]"
                             @input="capitalizeInput('nombre_comercial')"
                             :disabled="isFieldDisabled('nombre_comercial')" />
@@ -92,11 +102,19 @@
                             <i class="pi pi-exclamation-triangle mr-1"></i>
                             {{ errors.nombre_comercial[0] }}
                         </small>
+                        <small v-else-if="!rucConsultado && !rucDataFailed && formData.ruc.length < 11" class="text-blue-600 flex items-center">
+                            <i class="pi pi-info-circle mr-1"></i>
+                            Consulte el RUC para llenar automáticamente
+                        </small>
+                        <small v-else-if="rucDataFailed" class="text-orange-600 flex items-center">
+                            <i class="pi pi-exclamation-circle mr-1"></i>
+                            RUC no encontrado. Complete manualmente
+                        </small>
                     </div>
 
                     <!-- Inicio de Actividad -->
                     <div class="flex flex-col gap-2">
-                        <label for="inicio_actividad" class="font-medium text-gray-700">
+                        <label for="inicio_actividad" class="font-medium ">
                             <i class="pi pi-calendar mr-1 text-sm"></i>
                             Inicio de Actividad <span class="text-red-500">*</span>
                         </label>
@@ -104,21 +122,25 @@
                             id="inicio_actividad"
                             v-model="formData.inicio_actividad" 
                             dateFormat="dd/mm/yy"
-                            placeholder="Seleccione fecha"
+                            placeholder="Seleccione fecha de inicio de actividades"
                             :class="['w-full', getFieldClass('inicio_actividad')]" 
                             showIcon
                             :maxDate="new Date()"
                             :yearRange="'1900:2024'"
-                            :disabled="isFieldDisabled('inicio_actividad')" />
+                            :disabled="false" />
                         <small v-if="errors.inicio_actividad" class="text-red-500 flex items-center">
                             <i class="pi pi-exclamation-triangle mr-1"></i>
                             {{ errors.inicio_actividad[0] }}
+                        </small>
+                        <small v-else class="text-blue-600 flex items-center">
+                            <i class="pi pi-info-circle mr-1"></i>
+                            Fecha en que la empresa inició operaciones
                         </small>
                     </div>
 
                     <!-- Estado -->
                     <div class="flex flex-col gap-2">
-                        <label for="estado" class="font-medium text-gray-700">
+                        <label for="estado" class="font-medium ">
                             <i class="pi pi-flag mr-1 text-sm"></i>
                             Estado <span class="text-red-500">*</span>
                         </label>
@@ -128,25 +150,33 @@
                             :options="estadoOptions" 
                             optionLabel="label"
                             optionValue="value" 
-                            placeholder="Seleccione estado"
+                            placeholder="Consulte el RUC primero"
                             :class="['w-full', getFieldClass('estado')]"
                             :disabled="isFieldDisabled('estado')" />
                         <small v-if="errors.estado" class="text-red-500 flex items-center">
                             <i class="pi pi-exclamation-triangle mr-1"></i>
                             {{ errors.estado[0] }}
                         </small>
+                        <small v-else-if="!rucConsultado && !rucDataFailed && formData.ruc.length < 11" class="text-blue-600 flex items-center">
+                            <i class="pi pi-info-circle mr-1"></i>
+                            Consulte el RUC para obtener el estado
+                        </small>
+                        <small v-else-if="rucDataFailed" class="text-orange-600 flex items-center">
+                            <i class="pi pi-exclamation-circle mr-1"></i>
+                            Seleccione manualmente el estado
+                        </small>
                     </div>
 
                     <!-- Dirección -->
                     <div class="flex flex-col gap-2">
-                        <label for="direccion" class="font-medium text-gray-700">
+                        <label for="direccion" class="font-medium ">
                             <i class="pi pi-map-marker mr-1 text-sm"></i>
                             Dirección <span class="text-red-500">*</span>
-                            <span v-if="direccionFromApi" class="text-xs text-blue-600 ml-2">
-                                (Datos de SUNAT - puede actualizar si es necesario)
+                            <span v-if="direccionFromApi && rucConsultado" class="text-xs text-blue-600 ml-2">
+                                (Datos de SUNAT - puede editar si es necesario)
                             </span>
                         </label>
-                        <div class="flex gap-2" v-if="direccionFromApi && !editandoDireccion">
+                        <div class="flex gap-2" v-if="direccionFromApi && !editandoDireccion && rucConsultado">
                             <InputText 
                                 :value="formData.direccion"
                                 readonly
@@ -164,18 +194,30 @@
                             v-else
                             id="direccion"
                             v-model="formData.direccion" 
-                            placeholder="Ingrese dirección completa"
+                            placeholder="Consulte el RUC o complete manualmente"
                             :class="['w-full', getFieldClass('direccion')]"
                             :disabled="isFieldDisabled('direccion')" />
                         <small v-if="errors.direccion" class="text-red-500 flex items-center">
                             <i class="pi pi-exclamation-triangle mr-1"></i>
                             {{ errors.direccion[0] }}
                         </small>
+                        <small v-else-if="!rucConsultado && !rucDataFailed && formData.ruc.length < 11" class="text-blue-600 flex items-center">
+                            <i class="pi pi-info-circle mr-1"></i>
+                            Consulte el RUC para obtener la dirección automáticamente
+                        </small>
+                        <small v-else-if="rucDataFailed" class="text-orange-600 flex items-center">
+                            <i class="pi pi-exclamation-circle mr-1"></i>
+                            RUC no encontrado. Complete la dirección manualmente
+                        </small>
+                        <small v-else-if="formData.ruc.length === 11 && !rucConsultado" class="text-orange-600 flex items-center">
+                            <i class="pi pi-exclamation-circle mr-1"></i>
+                            Consulte el RUC primero para obtener la dirección
+                        </small>
                     </div>
 
                     <!-- Actividad Económica -->
                     <div class="flex flex-col gap-2">
-                        <label for="actividad_economica" class="font-medium text-gray-700">
+                        <label for="actividad_economica" class="font-medium ">
                             <i class="pi pi-briefcase mr-1 text-sm"></i>
                             Actividad Económica <span class="text-red-500">*</span>
                         </label>
@@ -184,23 +226,113 @@
                             v-model="formData.actividad_economica" 
                             placeholder="Ingrese actividad económica principal"
                             :class="['w-full', getFieldClass('actividad_economica')]"
-                            :disabled="isFieldDisabled('actividad_economica')" />
+                            :disabled="false" />
                         <small v-if="errors.actividad_economica" class="text-red-500 flex items-center">
                             <i class="pi pi-exclamation-triangle mr-1"></i>
                             {{ errors.actividad_economica[0] }}
+                        </small>
+                        <small v-else class="text-blue-600 flex items-center">
+                            <i class="pi pi-info-circle mr-1"></i>
+                            Describe la actividad principal de la empresa
+                        </small>
+                    </div>
+                    <div class="flex flex-col gap-2 lg:col-span-2">
+                        <label for="comentario" class="font-medium ">
+                            <i class="pi pi-comment mr-1 text-sm"></i>
+                            Comentario
+                        </label>
+                        <Textarea 
+                            id="comentario"
+                            v-model="formData.comentario" 
+                            rows="3"
+                            placeholder="Ingrese comentarios adicionales (opcional)"
+                            :class="['w-full', getFieldClass('comentario')]" />
+                        <small v-if="errors.comentario" class="text-red-500 flex items-center">
+                            <i class="pi pi-exclamation-triangle mr-1"></i>
+                            {{ errors.comentario[0] }}
+                        </small>
+                        <small v-else class="text-blue-600 flex items-center">
+                            <i class="pi pi-info-circle mr-1"></i>
+                            Información adicional sobre el prospecto
+                        </small>
+                    </div>
+
+                    <!-- Subida de Archivos -->
+                    <div class="flex flex-col gap-2 lg:col-span-2">
+                        <label for="archivos" class="font-medium">
+                            <i class="pi pi-upload mr-1 text-sm"></i>
+                            Documentos de Soporte
+                        </label>
+                        <FileUpload 
+                            id="archivos"
+                            ref="fileUpload"
+                            mode="basic" 
+                            :multiple="true"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xlsx,.xls"
+                            :maxFileSize="5000000"
+                            :fileLimit="5"
+                            chooseLabel="Seleccionar Archivos"
+                            uploadLabel="Subir"
+                            cancelLabel="Cancelar"
+                            :customUpload="true"
+                            @uploader="onFileUpload"
+                            @select="onFileSelect"
+                            @remove="onFileRemove"
+                            :class="['w-full', getFieldClass('archivos')]"
+                            :disabled="isSubmitting">
+                            <template #empty>
+                                <div class="flex flex-col items-center justify-center py-4">
+                                    <i class="pi pi-cloud-upload text-2xl text-gray-400"></i>
+                                    <p class="text-sm text-gray-500 mt-2">
+                                        Arrastre archivos aquí o haga clic para seleccionar
+                                    </p>
+                                </div>
+                            </template>
+                        </FileUpload>
+                        
+                        <!-- Lista de archivos seleccionados -->
+                        <div v-if="selectedFiles.length > 0" class="mt-2">
+                            <p class="text-sm font-medium mb-2">Archivos seleccionados:</p>
+                            <div class="flex flex-col gap-1">
+                                <div v-for="(file, index) in selectedFiles" :key="index" 
+                                     class="flex items-center justify-between p-2 bg-gray-50 rounded border">
+                                    <div class="flex items-center gap-2">
+                                        <i :class="getFileIcon(file.name)" class="text-blue-600"></i>
+                                        <span class="text-sm">{{ file.name }}</span>
+                                        <span class="text-xs text-gray-500">({{ formatFileSize(file.size) }})</span>
+                                    </div>
+                                    <Button 
+                                        type="button"
+                                        icon="pi pi-times" 
+                                        severity="secondary"
+                                        size="small"
+                                        class="p-button-text p-button-sm"
+                                        @click="removeFile(index)"
+                                        :disabled="isSubmitting" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <small v-if="errors.archivos" class="text-red-500 flex items-center">
+                            <i class="pi pi-exclamation-triangle mr-1"></i>
+                            {{ errors.archivos[0] }}
+                        </small>
+                        <small v-else class="text-blue-600 flex items-center">
+                            <i class="pi pi-info-circle mr-1"></i>
+                            PDF, DOC, DOCX, JPG, PNG, XLSX (máx. 5MB por archivo, 5 archivos)
                         </small>
                     </div>
                 </div>
             </div>
             <div class="flex flex-col gap-4">
-                <h3 class="font-semibold text-lg border-b pb-1 text-gray-700 flex items-center gap-2">
+                <h3 class="font-semibold text-lg border-b pb-1  flex items-center gap-2">
                     <i class="pi pi-dollar"></i>
                     Información de Parametros Sugeridos
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <!-- Monto Comisión -->
                     <div class="flex flex-col gap-1">
-                        <label for="monto_comision" class="font-medium text-gray-700 text-sm flex items-center gap-1">
+                        <label for="monto_comision" class="font-medium  text-sm flex items-center gap-1">
                             <i class="pi pi-money-bill"></i> Comisión <span class="text-red-500">*</span>
                         </label>
                         <InputNumber id="monto_comision" v-model="formData.monto_comision" placeholder="Ej: 2500.00"
@@ -211,7 +343,7 @@
                     </div>
                     <!-- Línea Cliente -->
                     <div class="flex flex-col gap-1">
-                        <label for="linea_cliente" class="font-medium text-gray-700 text-sm flex items-center gap-1">
+                        <label for="linea_cliente" class="font-medium  text-sm flex items-center gap-1">
                             <i class="pi pi-briefcase"></i> Línea Cliente <span class="text-red-500">*</span>
                         </label>
                         <InputNumber id="linea_cliente" v-model="formData.linea_cliente" placeholder="Ej: 50000.00"
@@ -222,7 +354,7 @@
                     </div>
                     <!-- Adelanto -->
                     <div class="flex flex-col gap-1">
-                        <label for="adelanto" class="font-medium text-gray-700 text-sm flex items-center gap-1">
+                        <label for="adelanto" class="font-medium  text-sm flex items-center gap-1">
                             <i class="pi pi-wallet"></i> Adelanto <span class="text-red-500">*</span>
                         </label>
                         <InputNumber id="adelanto" v-model="formData.adelanto" placeholder="Ej: 1500.00"
@@ -233,7 +365,7 @@
                     </div>
                     <!-- Tasa (TEM) -->
                     <div class="flex flex-col gap-1">
-                        <label for="tasa_tem" class="font-medium text-gray-700 text-sm flex items-center gap-1">
+                        <label for="tasa_tem" class="font-medium  text-sm flex items-center gap-1">
                             <i class="pi pi-chart-line"></i> Tasa (TEM) % <span class="text-red-500">*</span>
                         </label>
                         <InputNumber id="tasa_tem" v-model="formData.tasa_tem" placeholder="Ej: 1.25"
@@ -244,7 +376,7 @@
                     </div>
                     <!-- Línea Adelanto -->
                     <div class="flex flex-col gap-1">
-                        <label for="linea_adelanto" class="font-medium text-gray-700 text-sm flex items-center gap-1">
+                        <label for="linea_adelanto" class="font-medium  text-sm flex items-center gap-1">
                             <i class="pi pi-briefcase"></i> Línea Adelanto <span class="text-red-500">*</span>
                         </label>
                         <InputNumber id="linea_adelanto" v-model="formData.linea_adelanto" placeholder="Ej: 20000.00"
@@ -255,7 +387,7 @@
                     </div>
                     <!-- % Anticipo -->
                     <div class="flex flex-col gap-1">
-                        <label for="porcentaje_anticipo" class="font-medium text-gray-700 text-sm flex items-center gap-1">
+                        <label for="porcentaje_anticipo" class="font-medium  text-sm flex items-center gap-1">
                             <i class="pi pi-percentage"></i> % Adelanto <span class="text-red-500">*</span>
                         </label>
                         <InputNumber id="porcentaje_anticipo" v-model="formData.porcentaje_anticipo" placeholder="Ej: 10.50"
@@ -268,7 +400,7 @@
             </div>
             <!-- Datos del Representante -->
             <div class="flex flex-col gap-4">
-                <h3 class="font-semibold text-lg border-b pb-1 text-gray-700">
+                <h3 class="font-semibold text-lg border-b pb-1 ">
                     <i class="pi pi-user mr-2"></i>
                     Datos del Contacto
                 </h3>
@@ -276,7 +408,7 @@
                     
                     <!-- DNI del Representante -->
                     <div class="flex flex-col gap-2">
-                        <label for="dni" class="font-medium text-gray-700">
+                        <label for="dni" class="font-medium ">
                             <i class="pi pi-id-card mr-1 text-sm"></i>
                             DNI <span class="text-red-500">*</span>
                         </label>
@@ -284,7 +416,7 @@
                             <InputText 
                                 id="dni"
                                 v-model="formData.dni" 
-                                placeholder="12345678"
+                                placeholder="Ingrese DNI de 8 dígitos"
                                 maxlength="8"
                                 :class="['flex-1', getFieldClass('dni')]"
                                 @input="validateDni"
@@ -304,6 +436,14 @@
                             <i class="pi pi-exclamation-triangle mr-1"></i>
                             {{ errors.dni[0] }}
                         </small>
+                        <small v-else-if="formData.dni.length > 0 && formData.dni.length < 8 && !isConsultingDni" class="text-blue-600 flex items-center">
+                            <i class="pi pi-info-circle mr-1"></i>
+                            Complete 8 dígitos y presione buscar para consultar
+                        </small>
+                        <small v-else-if="formData.dni.length === 8 && !dniConsultado && !isConsultingDni && !apiErrorDni" class="text-orange-600 flex items-center">
+                            <i class="pi pi-exclamation-circle mr-1"></i>
+                            Presione el botón buscar o salga del campo para consultar
+                        </small>
                         <small v-else-if="dniConsultado && !apiErrorDni" class="text-green-600 flex items-center">
                             <i class="pi pi-check-circle mr-1"></i>
                             Datos obtenidos de RENIEC
@@ -316,14 +456,14 @@
 
                     <!-- Nombres -->
                     <div class="flex flex-col gap-2">
-                        <label for="nombre" class="font-medium text-gray-700">
+                        <label for="nombre" class="font-medium ">
                             <i class="pi pi-user mr-1 text-sm"></i>
                             Nombres <span class="text-red-500">*</span>
                         </label>
                         <InputText 
                             id="nombre"
-                            v-model="formData.nombre" 
-                            placeholder="Ingrese nombres"
+                            v-model="formData.nombre"
+                            placeholder="Consulte el DNI para llenar automáticamente"
                             :class="['w-full', getFieldClass('nombre')]"
                             @input="capitalizeInput('nombre')"
                             :disabled="isFieldDisabled('nombre')" />
@@ -331,18 +471,26 @@
                             <i class="pi pi-exclamation-triangle mr-1"></i>
                             {{ errors.nombre[0] }}
                         </small>
+                        <small v-else-if="!dniConsultado && !dniDataFailed && formData.dni.length < 8" class="text-blue-600 flex items-center">
+                            <i class="pi pi-info-circle mr-1"></i>
+                            Consulte el DNI para llenar automáticamente
+                        </small>
+                        <small v-else-if="dniDataFailed" class="text-orange-600 flex items-center">
+                            <i class="pi pi-exclamation-circle mr-1"></i>
+                            DNI no encontrado. Complete manualmente
+                        </small>
                     </div>
 
                     <!-- Apellido Paterno -->
                     <div class="flex flex-col gap-2">
-                        <label for="apellido_paterno" class="font-medium text-gray-700">
+                        <label for="apellido_paterno" class="font-medium ">
                             <i class="pi pi-user mr-1 text-sm"></i>
                             Apellido Paterno <span class="text-red-500">*</span>
                         </label>
                         <InputText 
                             id="apellido_paterno"
-                            v-model="formData.apellido_paterno" 
-                            placeholder="Ingrese apellido paterno"
+                            v-model="formData.apellido_paterno"
+                            placeholder="Consulte el DNI para llenar automáticamente"
                             :class="['w-full', getFieldClass('apellido_paterno')]"
                             @input="capitalizeInput('apellido_paterno')"
                             :disabled="isFieldDisabled('apellido_paterno')" />
@@ -350,18 +498,26 @@
                             <i class="pi pi-exclamation-triangle mr-1"></i>
                             {{ errors.apellido_paterno[0] }}
                         </small>
+                        <small v-else-if="!dniConsultado && !dniDataFailed && formData.dni.length < 8" class="text-blue-600 flex items-center">
+                            <i class="pi pi-info-circle mr-1"></i>
+                            Consulte el DNI para llenar automáticamente
+                        </small>
+                        <small v-else-if="dniDataFailed" class="text-orange-600 flex items-center">
+                            <i class="pi pi-exclamation-circle mr-1"></i>
+                            DNI no encontrado. Complete manualmente
+                        </small>
                     </div>
 
                     <!-- Apellido Materno -->
                     <div class="flex flex-col gap-2">
-                        <label for="apellido_materno" class="font-medium text-gray-700">
+                        <label for="apellido_materno" class="font-medium ">
                             <i class="pi pi-user mr-1 text-sm"></i>
                             Apellido Materno <span class="text-red-500">*</span>
                         </label>
                         <InputText 
                             id="apellido_materno"
-                            v-model="formData.apellido_materno" 
-                            placeholder="Ingrese apellido materno"
+                            v-model="formData.apellido_materno"
+                            placeholder="Consulte el DNI para llenar automáticamente"
                             :class="['w-full', getFieldClass('apellido_materno')]"
                             @input="capitalizeInput('apellido_materno')"
                             :disabled="isFieldDisabled('apellido_materno')" />
@@ -369,11 +525,19 @@
                             <i class="pi pi-exclamation-triangle mr-1"></i>
                             {{ errors.apellido_materno[0] }}
                         </small>
+                        <small v-else-if="!dniConsultado && !dniDataFailed && formData.dni.length < 8" class="text-blue-600 flex items-center">
+                            <i class="pi pi-info-circle mr-1"></i>
+                            Consulte el DNI para llenar automáticamente
+                        </small>
+                        <small v-else-if="dniDataFailed" class="text-orange-600 flex items-center">
+                            <i class="pi pi-exclamation-circle mr-1"></i>
+                            DNI no encontrado. Complete manualmente
+                        </small>
                     </div>
 
                     <!-- Cargo -->
                     <div class="flex flex-col gap-2">
-                        <label for="cargo" class="font-medium text-gray-700">
+                        <label for="cargo" class="font-medium ">
                             <i class="pi pi-briefcase mr-1 text-sm"></i>
                             Cargo <span class="text-red-500">*</span>
                         </label>
@@ -393,7 +557,7 @@
 
                     <!-- Correo Electrónico -->
                     <div class="flex flex-col gap-2">
-                        <label for="correo" class="font-medium text-gray-700">
+                        <label for="correo" class="font-medium ">
                             <i class="pi pi-envelope mr-1 text-sm"></i>
                             Correo Electrónico <span class="text-red-500">*</span>
                         </label>
@@ -416,7 +580,7 @@
 
                     <!-- Sitio Web -->
                     <div class="flex flex-col gap-2">
-                        <label for="pagina_web" class="font-medium text-gray-700">
+                        <label for="pagina_web" class="font-medium ">
                             <i class="pi pi-globe mr-1 text-sm"></i>
                             Sitio Web <span class="text-red-500">*</span>
                         </label>
@@ -434,7 +598,7 @@
 
                     <!-- Número Móvil -->
                     <div class="flex flex-col gap-2">
-                        <label for="telefono" class="font-medium text-gray-700">
+                        <label for="telefono" class="font-medium ">
                             <i class="pi pi-mobile mr-1 text-sm"></i>
                             Número Móvil <span class="text-red-500">*</span>
                         </label>
@@ -457,19 +621,19 @@
 
                     <!-- Observaciones -->
                     <div class="flex flex-col gap-2 lg:col-span-4">
-                        <label for="observaciones" class="font-medium text-gray-700">
+                        <label for="observacion" class="font-medium ">
                             <i class="pi pi-comment mr-1 text-sm"></i>
                             Observaciones
                         </label>
                         <Textarea 
                             id="observaciones"
-                            v-model="formData.observaciones" 
+                            v-model="formData.observacion" 
                             rows="3"
                             placeholder="Ingrese observaciones adicionales (opcional)"
-                            :class="['w-full', getFieldClass('observaciones')]" />
-                        <small v-if="errors.observaciones" class="text-red-500 flex items-center">
+                            :class="['w-full', getFieldClass('observacion')]" />
+                        <small v-if="errors.observacion" class="text-red-500 flex items-center">
                             <i class="pi pi-exclamation-triangle mr-1"></i>
-                            {{ errors.observaciones[0] }}
+                            {{ errors.observacion[0] }}
                         </small>
                     </div>
                 </div>
@@ -507,6 +671,8 @@ import DatePicker from 'primevue/datepicker'
 import Textarea from 'primevue/textarea'
 import Select from 'primevue/select'
 import Button from 'primevue/button'
+import Message from 'primevue/message'
+import FileUpload from 'primevue/fileupload'
 
 // Props
 const props = defineProps({
@@ -517,8 +683,15 @@ const props = defineProps({
     selectedTipoId: {
         type: Number,
         required: true
+    },
+    selectedMonedaId: {
+        type: Number,
+        required: true
     }
 })
+
+// Referencias
+const fileUpload = ref(null)
 
 // Form data
 const formData = ref({
@@ -529,8 +702,13 @@ const formData = ref({
     direccion: '',
     actividad_economica: '',
     estado: '',
-    tasa_esperada: null,
-    comisiones: null,
+    comentario: '',
+    monto_comision: null,
+    linea_cliente: null,
+    adelanto: null,
+    tasa_tem: null,
+    linea_adelanto: null,
+    porcentaje_anticipo: null,
     dni: '',
     nombre: '',
     apellido_paterno: '',
@@ -539,9 +717,11 @@ const formData = ref({
     correo: '',
     pagina_web: '',
     telefono: '',
-    observaciones: '',
+    observacion: '',
+    archivos: [],
     producto_id: props.selectedProductoId,
-    tipo_documento_id: props.selectedTipoId
+    tipo_documento_id: props.selectedTipoId,
+    moneda_id: props.selectedMonedaId  // ✅ AGREGAR ESTA LÍNEA
 })
 
 // Estados de validación y control
@@ -556,6 +736,9 @@ const apiErrorDni = ref('')
 const direccionFromApi = ref(false)
 const editandoDireccion = ref(false)
 const isValidEmail = ref(false)
+const rucDataFailed = ref(false)
+const dniDataFailed = ref(false)
+const selectedFiles = ref([])
 
 // Opciones para selectores
 const estadoOptions = ref([
@@ -581,10 +764,11 @@ const toast = useToast()
 // Computed properties
 const isFormValid = computed(() => {
     const requiredFields = [
-        'ruc', 'razon_social', 'nombre_comercial', 'inicio_actividad', 
-        'direccion', 'actividad_economica', 'estado', 'tasa_esperada', 
-        'comisiones', 'dni', 'nombre', 'apellido_paterno', 
-        'apellido_materno', 'cargo', 'correo', 'pagina_web', 'telefono'
+        'ruc', 'razon_social', 'nombre_comercial', 'direccion', 'estado',
+        'actividad_economica', 'monto_comision', 'linea_cliente', 'adelanto', 
+        'tasa_tem', 'linea_adelanto', 'porcentaje_anticipo', 'dni', 'nombre', 
+        'apellido_paterno', 'apellido_materno', 'cargo', 'correo', 
+        'pagina_web', 'telefono'
     ]
     
     return requiredFields.every(field => {
@@ -601,6 +785,7 @@ function validateRuc() {
     if (ruc.length === 11) {
         rucConsultado.value = false
         apiError.value = ''
+        rucDataFailed.value = false
     }
 }
 
@@ -611,6 +796,7 @@ function validateDni() {
     if (dni.length === 8) {
         dniConsultado.value = false
         apiErrorDni.value = ''
+        dniDataFailed.value = false
     }
 }
 
@@ -634,52 +820,191 @@ function capitalizeInput(field) {
     }
 }
 
+// Métodos para manejo de archivos
+const onFileSelect = (event) => {
+    selectedFiles.value = [...event.files]
+    formData.value.archivos = [...event.files]
+    
+    // Validar archivos seleccionados
+    const validFiles = validateFiles(event.files)
+    if (validFiles.length !== event.files.length) {
+        // Actualizar solo con archivos válidos
+        selectedFiles.value = validFiles
+        formData.value.archivos = validFiles
+        
+        // Limpiar y re-agregar archivos válidos al componente
+        if (fileUpload.value) {
+            fileUpload.value.clear()
+            validFiles.forEach(file => {
+                fileUpload.value.files.push(file)
+            })
+        }
+    }
+}
+
+const onFileRemove = (event) => {
+    selectedFiles.value = selectedFiles.value.filter(file => file.name !== event.file.name)
+    formData.value.archivos = selectedFiles.value
+}
+
+const onFileUpload = (event) => {
+    // Este método se ejecuta cuando se usa el upload automático
+    // En nuestro caso usamos customUpload, así que aquí podríamos 
+    // manejar la subida personalizada si fuera necesario
+    console.log('Archivos listos para subir:', event.files)
+}
+
+const removeFile = (index) => {
+    const removedFile = selectedFiles.value[index]
+    selectedFiles.value.splice(index, 1)
+    formData.value.archivos = selectedFiles.value
+    
+    // Actualizar el componente FileUpload
+    if (fileUpload.value && fileUpload.value.files) {
+        const fileIndex = fileUpload.value.files.findIndex(f => f.name === removedFile.name)
+        if (fileIndex !== -1) {
+            fileUpload.value.files.splice(fileIndex, 1)
+        }
+    }
+    
+    toast.add({
+        severity: 'info',
+        summary: 'Archivo eliminado',
+        detail: `${removedFile.name} fue eliminado de la lista`,
+        life: 2000
+    })
+}
+
+const validateFiles = (files) => {
+    const validFiles = []
+    const maxSize = 5 * 1024 * 1024 // 5MB
+    const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'image/jpeg',
+        'image/jpg',
+        'image/png'
+    ]
+    
+    files.forEach(file => {
+        // Validar tamaño
+        if (file.size > maxSize) {
+            toast.add({
+                severity: 'error',
+                summary: 'Archivo muy grande',
+                detail: `${file.name} excede el tamaño máximo de 5MB`,
+                life: 4000
+            })
+            return
+        }
+        
+        // Validar tipo
+        if (!allowedTypes.includes(file.type)) {
+            toast.add({
+                severity: 'error',
+                summary: 'Tipo de archivo no válido',
+                detail: `${file.name} no es un tipo de archivo permitido`,
+                life: 4000
+            })
+            return
+        }
+        
+        validFiles.push(file)
+    })
+    
+    return validFiles
+}
+
+const getFileIcon = (fileName) => {
+    const extension = fileName.split('.').pop().toLowerCase()
+    const iconMap = {
+        'pdf': 'pi pi-file-pdf',
+        'doc': 'pi pi-file-word',
+        'docx': 'pi pi-file-word',
+        'xls': 'pi pi-file-excel',
+        'xlsx': 'pi pi-file-excel',
+        'jpg': 'pi pi-image',
+        'jpeg': 'pi pi-image',
+        'png': 'pi pi-image'
+    }
+    return iconMap[extension] || 'pi pi-file'
+}
+
+const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
+}
+
 // Consultas de APIs
 async function consultarRuc() {
     if (formData.value.ruc.length !== 11) return
     
     isConsultingRuc.value = true
     apiError.value = ''
+    rucDataFailed.value = false
     
     try {
-        // Aquí iría la llamada real a la API de SUNAT
-        // const response = await axios.get(`/api/sunat/ruc/${formData.value.ruc}`)
+        const response = await axios.get(`/api/consultas/ruc/${formData.value.ruc}`)
         
-        // Simulación de respuesta
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        
-        // Datos simulados
-        const datosSimulados = {
-            razon_social: 'EMPRESA EJEMPLO S.A.C.',
-            nombre_comercial: 'EMPRESA EJEMPLO',
-            estado: 'ACTIVO',
-            direccion: 'AV. EXAMPLE 123 - SAN ISIDRO - LIMA - LIMA',
-            actividad_economica: 'ACTIVIDADES DE CONSULTORÍA DE GESTIÓN EMPRESARIAL'
+        if (response.data.success && response.data.data) {
+            const data = response.data.data
+            
+            // Mapear campos según la estructura de la API
+            formData.value.razon_social = data.nombre_o_razon_social || data.name || ''
+            formData.value.nombre_comercial = data.trade_name || data.nombre_o_razon_social || data.name || ''
+            formData.value.estado = data.estado || data.state || ''
+            formData.value.direccion = data.direccion_completa || data.address || data.direccion || ''
+            
+            // Para actividad económica, si no viene en la API, permitir edición manual
+            if (data.actividad_economica) {
+                formData.value.actividad_economica = data.actividad_economica
+            }
+            
+            rucConsultado.value = true
+            direccionFromApi.value = !!formData.value.direccion
+            editandoDireccion.value = false
+            
+            toast.add({
+                severity: 'success',
+                summary: 'RUC consultado',
+                detail: 'Datos obtenidos correctamente de SUNAT',
+                life: 3000
+            })
+        } else {
+            // Datos no encontrados o inválidos
+            rucDataFailed.value = true
+            apiError.value = 'No se encontraron datos para este RUC'
+            
+            toast.add({
+                severity: 'warn',
+                summary: 'RUC no encontrado',
+                detail: 'No se encontraron datos para este RUC. Complete los campos manualmente.',
+                life: 4000
+            })
         }
         
-        formData.value.razon_social = datosSimulados.razon_social
-        formData.value.nombre_comercial = datosSimulados.nombre_comercial
-        formData.value.estado = datosSimulados.estado
-        formData.value.direccion = datosSimulados.direccion
-        formData.value.actividad_economica = datosSimulados.actividad_economica
-        
-        rucConsultado.value = true
-        direccionFromApi.value = true
-        editandoDireccion.value = false
-        
-        toast.add({
-            severity: 'success',
-            summary: 'RUC consultado',
-            detail: 'Datos obtenidos correctamente de SUNAT',
-            life: 3000
-        })
-        
     } catch (error) {
-        apiError.value = 'No se pudo consultar el RUC. Intente nuevamente.'
+        console.error('Error consultando RUC:', error)
+        rucDataFailed.value = true
+        
+        if (error.response?.status === 404) {
+            apiError.value = 'RUC no encontrado en SUNAT'
+        } else if (error.response?.status === 429) {
+            apiError.value = 'Demasiadas consultas. Intente nuevamente en unos minutos.'
+        } else {
+            apiError.value = 'Error al consultar RUC. Complete los campos manualmente.'
+        }
+        
         toast.add({
             severity: 'warn',
             summary: 'Error en consulta',
-            detail: 'No se pudo obtener información del RUC',
+            detail: apiError.value,
             life: 4000
         })
     } finally {
@@ -692,40 +1017,56 @@ async function consultarDniRepresentante() {
     
     isConsultingDni.value = true
     apiErrorDni.value = ''
+    dniDataFailed.value = false
     
     try {
-        // Aquí iría la llamada real a la API de RENIEC
-        // const response = await axios.get(`/api/reniec/dni/${formData.value.dni}`)
+        const response = await axios.get(`/api/consultas/consultar-dni/${formData.value.dni}`)
         
-        // Simulación de respuesta
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
-        // Datos simulados
-        const datosSimulados = {
-            nombres: 'JUAN CARLOS',
-            apellido_paterno: 'PÉREZ',
-            apellido_materno: 'GARCÍA'
+        if (response.data.success && response.data.data) {
+            const data = response.data.data
+            
+            // Mapear campos según la estructura de la API
+            formData.value.nombre = data.nombres || ''
+            formData.value.apellido_paterno = data.apellido_paterno || ''
+            formData.value.apellido_materno = data.apellido_materno || ''
+            
+            dniConsultado.value = true
+            
+            toast.add({
+                severity: 'success',
+                summary: 'DNI consultado',
+                detail: 'Datos obtenidos correctamente de RENIEC',
+                life: 3000
+            })
+        } else {
+            // Datos no encontrados o inválidos
+            dniDataFailed.value = true
+            apiErrorDni.value = 'No se encontraron datos para este DNI'
+            
+            toast.add({
+                severity: 'warn',
+                summary: 'DNI no encontrado',
+                detail: 'No se encontraron datos para este DNI. Complete los campos manualmente.',
+                life: 4000
+            })
         }
         
-        formData.value.nombre = datosSimulados.nombres
-        formData.value.apellido_paterno = datosSimulados.apellido_paterno
-        formData.value.apellido_materno = datosSimulados.apellido_materno
-        
-        dniConsultado.value = true
-        
-        toast.add({
-            severity: 'success',
-            summary: 'DNI consultado',
-            detail: 'Datos obtenidos correctamente de RENIEC',
-            life: 3000
-        })
-        
     } catch (error) {
-        apiErrorDni.value = 'No se pudo consultar el DNI. Intente nuevamente.'
+        console.error('Error consultando DNI:', error)
+        dniDataFailed.value = true
+        
+        if (error.response?.status === 404) {
+            apiErrorDni.value = 'DNI no encontrado en RENIEC'
+        } else if (error.response?.status === 429) {
+            apiErrorDni.value = 'Demasiadas consultas. Intente nuevamente en unos minutos.'
+        } else {
+            apiErrorDni.value = 'Error al consultar DNI. Complete los campos manualmente.'
+        }
+        
         toast.add({
             severity: 'warn',
             summary: 'Error en consulta',
-            detail: 'No se pudo obtener información del DNI',
+            detail: apiErrorDni.value,
             life: 4000
         })
     } finally {
@@ -735,19 +1076,20 @@ async function consultarDniRepresentante() {
 
 // Función para determinar si un campo debe estar deshabilitado
 function isFieldDisabled(field) {
-    const fieldsFromRuc = ['razon_social', 'nombre_comercial', 'estado', 'actividad_economica']
+    const fieldsFromRuc = ['razon_social', 'nombre_comercial', 'estado']
     const fieldsFromDni = ['nombre', 'apellido_paterno', 'apellido_materno']
     const fieldsFromDireccion = ['direccion']
     
-    if (fieldsFromRuc.includes(field) && rucConsultado.value) {
+    // Solo deshabilitar si la consulta fue exitosa
+    if (fieldsFromRuc.includes(field) && rucConsultado.value && !rucDataFailed.value) {
         return true
     }
     
-    if (fieldsFromDni.includes(field) && dniConsultado.value) {
+    if (fieldsFromDni.includes(field) && dniConsultado.value && !dniDataFailed.value) {
         return true
     }
     
-    if (fieldsFromDireccion.includes(field) && direccionFromApi.value && !editandoDireccion.value) {
+    if (fieldsFromDireccion.includes(field) && direccionFromApi.value && !editandoDireccion.value && !rucDataFailed.value) {
         return true
     }
     
@@ -763,12 +1105,14 @@ function getFieldClass(field) {
 function clearForm() {
     // Resetear todos los campos excepto los IDs de producto y tipo
     Object.keys(formData.value).forEach(key => {
-        if (key === 'producto_id' || key === 'tipo_documento_id') return
+        if (key === 'producto_id' || key === 'tipo_documento_id' || key === 'moneda_id') return
         
         if (key === 'inicio_actividad') {
             formData.value[key] = null
         } else if (typeof formData.value[key] === 'number') {
             formData.value[key] = null
+        } else if (key === 'archivos') {
+            formData.value[key] = []
         } else {
             formData.value[key] = ''
         }
@@ -783,6 +1127,14 @@ function clearForm() {
     apiError.value = ''
     apiErrorDni.value = ''
     isValidEmail.value = false
+    rucDataFailed.value = false
+    dniDataFailed.value = false
+    selectedFiles.value = []
+    
+    // Limpiar el componente de archivos
+    if (fileUpload.value) {
+        fileUpload.value.clear()
+    }
     
     toast.add({
         severity: 'info',
@@ -809,12 +1161,42 @@ async function submitForm() {
             return
         }
 
-        const { data } = await axios.post('/prospectos-ruc', formData.value)
+        // Preparar FormData para envío con archivos
+        const formDataToSend = new FormData()
+        
+        // Agregar todos los campos del formulario
+        Object.keys(formData.value).forEach(key => {
+            if (key === 'archivos') {
+                // Los archivos se agregan por separado
+                return
+            }
+            
+            const value = formData.value[key]
+            if (value !== null && value !== undefined && value !== '') {
+                // Convertir fecha a formato ISO si es necesario
+                if (key === 'inicio_actividad' && value instanceof Date) {
+                    formDataToSend.append(key, value.toISOString().split('T')[0])
+                } else {
+                    formDataToSend.append(key, value.toString())
+                }
+            }
+        })
+        
+        // Agregar archivos
+        selectedFiles.value.forEach((file, index) => {
+            formDataToSend.append(`archivos[${index}]`, file)
+        })
+
+        const { data } = await axios.post('/persona/ruc', formDataToSend, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
 
         toast.add({
             severity: 'success',
             summary: 'Registro exitoso',
-            detail: 'El prospecto empresarial fue registrado correctamente.',
+            detail: `El prospecto empresarial fue registrado correctamente${selectedFiles.value.length > 0 ? ` con ${selectedFiles.value.length} archivo(s)` : ''}.`,
             life: 4000
         })
 
@@ -844,7 +1226,7 @@ async function submitForm() {
     }
 }
 
-// Watch para limpiar errores cuando se modifiquen los campos
+// Watchers
 watch(() => formData.value.ruc, () => {
     if (errors.value.ruc) {
         delete errors.value.ruc
@@ -852,6 +1234,9 @@ watch(() => formData.value.ruc, () => {
     if (formData.value.ruc.length !== 11) {
         rucConsultado.value = false
         apiError.value = ''
+        rucDataFailed.value = false
+        direccionFromApi.value = false
+        editandoDireccion.value = false
     }
 })
 
@@ -862,6 +1247,7 @@ watch(() => formData.value.dni, () => {
     if (formData.value.dni.length !== 8) {
         dniConsultado.value = false
         apiErrorDni.value = ''
+        dniDataFailed.value = false
     }
 })
 
@@ -874,9 +1260,10 @@ watch(() => formData.value.correo, () => {
 
 // Limpiar errores cuando se modifiquen otros campos
 const watchFields = ['razon_social', 'nombre_comercial', 'inicio_actividad', 'direccion', 
-                    'actividad_economica', 'estado', 'tasa_esperada', 'comisiones', 
+                    'actividad_economica', 'estado', 'comentario', 'monto_comision', 'linea_cliente',
+                    'adelanto', 'tasa_tem', 'linea_adelanto', 'porcentaje_anticipo',
                     'nombre', 'apellido_paterno', 'apellido_materno', 'cargo', 
-                    'pagina_web', 'telefono', 'observaciones']
+                    'pagina_web', 'telefono', 'observacion']
 
 watchFields.forEach(field => {
     watch(() => formData.value[field], () => {
@@ -885,4 +1272,11 @@ watchFields.forEach(field => {
         }
     })
 })
+
+// Watcher para archivos
+watch(() => selectedFiles.value, () => {
+    if (errors.value.archivos) {
+        delete errors.value.archivos
+    }
+}, { deep: true })
 </script>

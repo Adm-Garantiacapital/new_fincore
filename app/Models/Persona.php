@@ -9,8 +9,11 @@ class Persona extends Model{
     use SoftDeletes;
     protected $fillable = [
         'tipo_documento_id',
+        'observacion',
+        'comentario',
         'producto_id',
         'estado_id',
+        'moneda_id',
         'created_by',
         'updated_by',
         'deleted_by',
@@ -44,5 +47,8 @@ class Persona extends Model{
     }
     public function condicionesFinancieras(){
         return $this->hasMany(PersonaCondicionFinanciera::class, 'persona_id');
+    }
+    public function moneda(){
+        return $this->belongsTo(Moneda::class, 'moneda_id');
     }
 }
