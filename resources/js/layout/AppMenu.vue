@@ -19,13 +19,18 @@ const model = computed(() => [
         icon: 'pi pi-fw pi-cog',
         items: [
             {
-                label: 'Tipo de Persona',
+                label: 'Prospectos',
                 icon: 'pi pi-fw pi-users',
                 items: [
                     hasPermission('ver persona') && {
-                        label: 'Reguistro de Persona',
+                        label: 'Reguistro de Prospecto',
                         icon: 'pi pi-fw pi-user-edit',
                         to: '/panel/tipo'
+                    },
+                    hasPermission('ver persona') && {
+                        label: 'Listado de Persona',
+                        icon: 'pi pi-fw pi-user-edit',
+                        to: '/panel/tipo/list'
                     }
                 ].filter(Boolean)
             }

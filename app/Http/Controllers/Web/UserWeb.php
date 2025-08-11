@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
-use Spatie\Permission\Contracts\Role;
+use Spatie\Permission\Models\Role;
 
 class UserWeb extends Controller{
     public function index(): Response{

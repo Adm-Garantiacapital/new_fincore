@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 
@@ -11,6 +10,36 @@ class PermissionSeeder extends Seeder{
      * Run the database seeds.
      */
     public function run(): void{
+        #Aceptante
+        Permission::create(['name' => 'crear aceptante']);
+        Permission::create(['name' => 'editar aceptante']);
+        Permission::create(['name' => 'eliminar aceptante']);
+        Permission::create(['name' => 'ver aceptante']);
+        #Carnet de extrangeria
+        Permission::create(['name' => 'crear carnet de extrangeria']);
+        Permission::create(['name' => 'editar carnet de extrangeria']);
+        Permission::create(['name' => 'eliminar carnet de extrangeria']);
+        Permission::create(['name' => 'ver carnet de extrangeria']);
+        #Subida de archivos
+        Permission::create(['name' => 'crear subir archivos']);
+        Permission::create(['name' => 'editar subir archivos']);
+        Permission::create(['name' => 'eliminar subir archivos']);
+        Permission::create(['name' => 'ver subir archivos']);
+        #Moneda
+        Permission::create(['name' => 'crear moneda']);
+        Permission::create(['name' => 'editar moneda']);
+        Permission::create(['name' => 'eliminar moneda']);
+        Permission::create(['name' => 'ver moneda']);
+        #Condiciones Financieras
+        Permission::create(['name' => 'crear condiciones financieras']);
+        Permission::create(['name' => 'editar condiciones financieras']);
+        Permission::create(['name' => 'eliminar condiciones financieras']);
+        Permission::create(['name' => 'ver condiciones financieras']);
+        #Tipo de documento
+        Permission::create(['name' => 'crear tipo documento']);
+        Permission::create(['name' => 'editar tipo documento']);
+        Permission::create(['name' => 'eliminar tipo documento']);
+        Permission::create(['name' => 'ver tipo documento']);
         #Areas
         Permission::create(['name' => 'crear areas']);
         Permission::create(['name' => 'editar areas']);
@@ -36,6 +65,21 @@ class PermissionSeeder extends Seeder{
         Permission::create(['name' => 'editar persona']);
         Permission::create(['name' => 'eliminar persona']);
         Permission::create(['name' => 'ver persona']);
+        #Cliente
+        Permission::create(['name' => 'crear cliente']);
+        Permission::create(['name' => 'editar cliente']);
+        Permission::create(['name' => 'eliminar cliente']);
+        Permission::create(['name' => 'ver cliente']);
+        #Proveedor
+        Permission::create(['name' => 'crear proveedor']);
+        Permission::create(['name' => 'editar proveedor']);
+        Permission::create(['name' => 'eliminar proveedor']);
+        Permission::create(['name' => 'ver proveedor']);
+        #Persona de contacto
+        Permission::create(['name' => 'crear contactos persona']);
+        Permission::create(['name' => 'editar contactos persona']);
+        Permission::create(['name' => 'eliminar contactos persona']);
+        Permission::create(['name' => 'ver contactos persona']);
         #Productos
         Permission::create(['name' => 'crear productos']);
         Permission::create(['name' => 'editar productos']);

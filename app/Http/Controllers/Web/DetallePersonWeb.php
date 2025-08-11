@@ -1,14 +1,21 @@
 <?php
 
 namespace App\Http\Controllers\Web;
+
 use App\Http\Controllers\Controller;
-use App\Models\DetallePersona;
+use App\Http\Resources\DetallePersona\DetallePersonaResource;
+use App\Models\Persona;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
+
 class DetallePersonWeb extends Controller{
-    public function views(): Response{
-        Gate::authorize('viewAny', DetallePersona::class);
-        return Inertia::render('panel/DetallePersona/indexDetallePersona');
+    public function views($id): Response{
+        Gate::authorize('viewAny', Persona::class);
+        $persona = Persona::with(['producto', 'estado'])->findOrFail($id);
+        $personaResource = new DetallePersonaResource($persona);
+        return Inertia::render('panel/DetallePersona/indexDetallePersona', [
+            'detallePersona' => $personaResource,
+        ]);
     }
 }

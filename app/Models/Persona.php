@@ -8,41 +8,47 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Persona extends Model{
     use SoftDeletes;
     protected $fillable = [
-        'nombre',
-        'apellido_paterno',
-        'apellido_materno',
-        'tipo',
-        'documento',
-        'tipo_documento',
-        'email',
-        'telefono',
-        'direccion',
-        'razon_social',
-        'nombre_comercial',
-        'fecha_inicio_actividad',
-        'actividad_economica',
-        'ventas_aproximadas',
-        'pagina_web',
-        'fecha_nacimiento',
-        'sexo',
-        'estado_civil',
+        'tipo_documento_id',
+        'observacion',
+        'comentario',
         'producto_id',
         'estado_id',
-        'descripcion',
+        'moneda_id',
         'created_by',
         'updated_by',
-        'deleted_by'
+        'deleted_by',
     ];
+    public function tipoDocumento(){
+        return $this->belongsTo(TipoDocumento::class);
+    }
     public function producto(){
         return $this->belongsTo(Producto::class);
     }
     public function estado(){
         return $this->belongsTo(Estado::class);
     }
-    public function detalle(){
-        return $this->hasOne(DetallePersona::class);
+    public function cliente(){
+        return $this->hasOne(Cliente::class);
     }
-    public function comentarios(){
-        return $this->hasMany(ComentarioPersona::class);
+    public function proveedor(){
+        return $this->hasOne(Proveedor::class);
+    }
+    public function contactos(){
+        return $this->hasMany(ContactoPersona::class);
+    }
+    public function creador(){
+        return $this->belongsTo(User::class, 'created_by');
+    }
+    public function editor(){
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+    public function eliminador(){
+        return $this->belongsTo(User::class, 'deleted_by');
+    }
+    public function condicionesFinancieras(){
+        return $this->hasMany(PersonaCondicionFinanciera::class, 'persona_id');
+    }
+    public function moneda(){
+        return $this->belongsTo(Moneda::class, 'moneda_id');
     }
 }
